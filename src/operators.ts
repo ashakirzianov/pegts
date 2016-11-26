@@ -13,7 +13,7 @@ function collection<TO>(outputs: TO[]): Many<TO> {
     return outputs;
 }
 
-export function sequence<TI, TOL, TOR>(left: Parser<TI, TOL>, right: Parser<TI, TOR>) : Parser<TI, Pair<TOL, TOR>> {
+export function sequence<TI, TOL, TOR>(left: Parser<TI, TOL>, right: Parser<TI, TOR>): Parser<TI, Pair<TOL, TOR>> {
     return new Sequence(left, right);
 }
 
@@ -143,6 +143,6 @@ class Produce<TI, TO, TR> implements Parser<TI, TR> {
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
-        return r.success ? new Success(this.f(r.value), r.next, r.lookAhead) : r;
+        return r.success ? new Success(this.f(r.value), r.next, r.lookAhead) : new Fail(r.lookAhead);
     }
 }

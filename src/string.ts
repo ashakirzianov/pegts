@@ -4,7 +4,7 @@ class StringInput implements Input<string> {
     constructor(readonly stream: string) {}
 }
 
-export function prefix(str: string) {
+export function prefix(str: string): Parser<string, string> {
     return new PrefixParser(str);
 }
 
