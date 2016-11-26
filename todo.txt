@@ -1,9 +1,4 @@
-- Add builders:
-    * string parser
-    * start builder
-    * constructor interfaces (up to 3 params)
-    * then builders (up to 3 params)
-    * either/or builders (implements parser)
 - Add examples
 - Add test
 - Config gulp for tslint extension
+- Separate public/private interfaces in builder

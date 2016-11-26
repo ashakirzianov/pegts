@@ -3,6 +3,7 @@
         "noImplicitAny": true,
         "strictNullChecks": true,
         "sourceMap": true,
+        "suppressImplicitAnyIndexErrors": true,
         "outDir": "dist"
     },
     "exclude": ["node_modules", "dist"]
