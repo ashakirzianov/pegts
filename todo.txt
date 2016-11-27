@@ -1,15 +1,13 @@
 Short list
 ===============
 - Add predefined parsers:
-    * digit
-    * number
-    * string ("", '')
-    * boolean
     * single-line comment
     * multi-line comment
     * standard trivia
 - Add predefined macro:
     * binary expression
+- StringBuilder:
+    * ignore case option
 - toString:
     * explan
     * parsers
@@ -19,8 +17,16 @@ Short list
 
 Long list
 ===============
+- Predefined:
+    * exponential form number
+    * letter class
+- Tests:
+    * predefined
+    * operators
+    * integration
+    * string parsers
+    * parser builders
 - Extend explan
-- Add tests
 - Config gulp for tslint extension
 - Try code generation for strongly typed builders
 - Implement cached parser

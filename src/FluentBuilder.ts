@@ -4,12 +4,13 @@ import { ParserBuilder, builder } from "./ParserBuilder";
 export {
     startsWith,
     either,
-    atLeastOne, anyNumberOf,
-    maybe,
+    atLeastOne, anyNumberOf, maybe, iff, iffNot,
 } from "./ParserBuilder";
 
 export {
-    string, stringInput,
+    str, stringInput, notStr, anyChar,
+    plus, star, question,
+    StringParserBuilder,
 } from "./StringBuilder";
 
 export function recursive<TO>() {

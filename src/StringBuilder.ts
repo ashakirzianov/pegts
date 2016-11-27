@@ -1,16 +1,20 @@
 import { Parser, Input, Success, Fail } from "./Core";
-import { choice, zeroMore, oneMore, optional, not, and, adopt } from "./Operators";
+import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
 
 export function prefix(str: string): Parser<string, string> {
     return new PrefixParser(str);
 }
 
-export function string(str: string): StringParserBuilder {
+export function anyChar(): StringParserBuilder {
+    return new StringParserBuilderImp(new AnyCharParser());
+}
+
+export function str(str: string): StringParserBuilder {
     return new StringParserBuilderImp(prefix(str));
 }
 
-export function notStarts(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(not(parser(sob)), v => ""));
+export function notStr(sob: StringOrParser): StringParserBuilder {
+    return new StringParserBuilderImp(new NotPrefixParser(parser(sob)));
 }
 
 export function star(sob: StringOrParser): StringParserBuilder {
@@ -43,6 +47,25 @@ class PrefixParser implements Parser<string, string> {
     }
 }
 
+class NotPrefixParser implements Parser<string, string> {
+    constructor(readonly prefixParser: Parser<string, string>) {}
+
+    parse(input: Input<string>) {
+        const r = this.prefixParser.parse(input);
+        return r.success ?
+            new Fail(r.lookAhead)
+            : new Success(input.stream.substr(0, r.lookAhead), stringInput(input.stream.substr(r.lookAhead)), r.lookAhead);
+    }
+}
+
+class AnyCharParser implements Parser<string, string> {
+    parse(input: Input<string>) {
+        return input.stream.length > 0 ?
+            new Success(input.stream[0], stringInput(input.stream.substr(1)), 1)
+            : new Fail(1);
+    }
+}
+
 export type StringOrParser = string | Parser<string, string>;
 function isParser(sob: StringOrParser): sob is Parser<string, string> {
     return typeof sob !== "string";
@@ -54,6 +77,7 @@ function parser(sob: StringOrParser): Parser<string, string> {
 export interface StringParserBuilder extends Parser<string, string> {
     readonly parser: Parser<string, string>;
     or(other: StringOrParser): StringParserBuilder;
+    followedBy(next: StringOrParser): StringParserBuilder;
     atLeastOne(): StringParserBuilder;
     anyNumber(): StringParserBuilder;
     maybe(): StringParserBuilder;
@@ -71,6 +95,10 @@ class StringParserBuilderImp implements Parser<string, string> {
         return new StringParserBuilderImp(choice(this.parser, parser(other)));
     }
 
+    followedBy(next: StringOrParser) {
+        return  new StringParserBuilderImp(adopt(sequence(this.parser, parser(next)), p => pegPairLeft(p) + pegPairRight(p)));
+    }
+
     atLeastOne() {
         return plus(this.parser);
     }
@@ -84,6 +112,6 @@ class StringParserBuilderImp implements Parser<string, string> {
     }
 
     not() {
-        return notStarts(this.parser);
+        return notStr(this.parser);
     }
 }
