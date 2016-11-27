@@ -50,6 +50,10 @@ export interface ParserBuilder<TI, TO> extends Parser<TI, TO> {
     adopt<TR>(f: (v: TO) => TR): ParserBuilder<TI, TR>;
     or(option: Parser<TI, TO>): ParserBuilder<TI, TO>;
     followedBy<TR>(next: Parser<TI, TR>): ParserChainBuilder2<TI, TO, TR>;
+    atLeastOne(): ManyParserBuilder<TI, TO>;
+    anyNumber(): ManyParserBuilder<TI, TO>;
+    maybe(): ParserBuilder<TI, TO | undefined>;
+    not(): ParserBuilder<TI, undefined>;
 }
 
 export interface ManyParserBuilder<TI, TO> extends ParserBuilder<TI, Many<TO>> { // TODO: fix naming with 'G'?
@@ -88,6 +92,22 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
 
     followedBy<TR>(next: Parser<TI, TR>): ParserChainBuilder2<TI, TO, TR> {
         return startsWith<TI, TO>(builder(this.containedParser)).followedBy(next);
+    }
+
+    atLeastOne() {
+        return atLeastOne(this.parser());
+    }
+
+    anyNumber() {
+        return anyNumberOf(this.parser());
+    }
+
+    maybe() {
+        return maybe(this.parser());
+    }
+
+    not() {
+        return iffNot(this.parser());
     }
 }
 
