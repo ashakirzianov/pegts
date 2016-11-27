@@ -4,6 +4,7 @@
   "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
   "scripts": {
+    "full": "npm run build && npm run lint",
     "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",
     "build": "tsc"
   },

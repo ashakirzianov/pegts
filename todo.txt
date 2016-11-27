@@ -1,10 +1,5 @@
 Short list
 ===============
-- Fluent:
-    * zeroMore postfix
-    * oneMore postfix
-    * maybe postfix
-    * not Postfix
 - Add predefined parsers:
     * digit
     * number
@@ -15,13 +10,12 @@ Short list
     * standard trivia
 - Add predefined macro:
     * binary expression
-- Improve type inference
 - toString:
     * explan
     * parsers
 - Consider make parser() parser in ParserBuilder
-- Consider harden input parameter requirements from Parser to ParserBuilder
-- Use capital letters for file names
+- Explan:
+    * error recovery
 
 Long list
 ===============
@@ -32,3 +26,4 @@ Long list
 - Implement cached parser
 - Consider continuous integration
 - Consider proper builders design
+- Improve type inference
