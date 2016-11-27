@@ -5,11 +5,11 @@ import {
     LiteralExpression, NumLiteral, BoolLiteral, StringLiteral,
 } from "./explan";
 import {
-    startsWith,
-    either, anyNumberOf, atLeastOne,
-    string, recursive,
-    stringInput,
-} from "../src/builder";
+    atLeastOne, anyNumberOf,
+    startsWith, either,
+    string, stringInput,
+    recursive,
+} from "../src/fluentBuilder";
 
 const whiteSpace = string(" ").parser;
 
@@ -21,34 +21,28 @@ const sub = string("-").parser;
 const mult = string("*").parser;
 const div = string("/").parser;
 
-const trivia = startsWith(anyNumberOf(whiteSpace).reduce((acc, s) => acc + s, "").parser).produce(Trivia);
+const trivia = startsWith(anyNumberOf(whiteSpace).reduce((acc, s) => acc + s, "").parser()).produce(Trivia);
 
-const numLiteral = startsWith(trivia).followedBy(num).produce(NumLiteral);
+const numLiteral = trivia.followedBy(num).produce(NumLiteral);
 const literal = numLiteral;
 
-const addPrescOperator = startsWith(trivia)
-    .followedBy(either(add).or(sub))
-    .produce(Special);
+const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(Special);
 
-const multPrescOperator = startsWith(trivia)
-    .followedBy(either(mult).or(div))
-    .produce(Special);
+const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(Special);
 
 const expression = recursive<Expression>();
 
-const literalExpression = startsWith(literal).produce(LiteralExpression);
-const multExpression = either<string, Expression>(
-    startsWith(literalExpression)
+const literalExpression = literal.produce(LiteralExpression);
+const multExpression = literalExpression
     .followedBy(multPrescOperator)
     .followedBy(literalExpression)
-    .produce(BinaryExpression))
-    .or(literalExpression).parser;
-const addExpression = either<string, Expression>(
-    startsWith(multExpression)
+    .produce<Expression>(BinaryExpression)
+    .or(literalExpression);
+const addExpression = multExpression
     .followedBy(addPrescOperator)
     .followedBy(multExpression)
-    .produce(BinaryExpression))
-    .or(multExpression).parser;
+    .produce<Expression>(BinaryExpression)
+    .or(multExpression);
 
 expression.set(addExpression);
 
