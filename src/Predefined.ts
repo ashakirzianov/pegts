@@ -33,8 +33,17 @@ export function quoted(quoteParser: StringParserBuilder) {
 export interface BinaryConstructor<TExp, TOp> {
     new (l: TExp, op: TOp, r: TExp): TExp;
 }
-export function binary<TExp, TOp>(
+
+function singleBinary<TExp, TOp>(
     expParser: ParserBuilder<string, TExp>, opParser: Parser<string, TOp>, con: BinaryConstructor<TExp, TOp>,
     ): ParserBuilder<string, TExp> {
         return expParser.followedBy(opParser).followedBy(expParser).produce(con).or(expParser);
+}
+
+export function binary<TExp, TOp>(
+    expParser: ParserBuilder<string, TExp>, opParser: ParserBuilder<string, TOp>, con: BinaryConstructor<TExp, TOp>,
+    ): ParserBuilder<string, TExp> {
+        return expParser
+            .followedBy(opParser.followedBy(expParser).adopt((o, e) => { return { op: o, exp: e }; }).anyNumber())
+            .adopt((init, rest) => rest.reduce((acc, pair) => new con(acc, pair.op, pair.exp), init));
 }

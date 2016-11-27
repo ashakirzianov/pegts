@@ -1,7 +1,6 @@
 Short list
 ===============
 - Fixes:
-    * fix binary macros (should parse more than one pair)
 - StringBuilder:
     * ignore case option
 - toString:
