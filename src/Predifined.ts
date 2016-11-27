@@ -4,8 +4,16 @@ import {
     StringParserBuilder,
 } from "./FluentBuilder";
 
-export const whiteSpace = str(" ");
-export const trivia = whiteSpace.anyNumber();
+export const lineEnd = str("\n");
+export const space = str(" ");
+export const tab = str("\t");
+export const whiteSpace = space.or(tab).or(lineEnd);
+
+export const lineComment = str("//").followedBy(lineEnd.not().anyNumber()).followedBy(lineEnd);
+const multiLineCommentInside = str("/").not().or(str("/").followedBy(str("*").not())).anyNumber();
+export const multiLineComment = str("/*").followedBy(multiLineCommentInside).followedBy("*/");
+
+export const trivia = whiteSpace.or(lineComment).or(multiLineComment).anyNumber();
 
 export const digit = str("0").or("1").or("2").or("3").or("4").or("5").or("6").or("7").or("8").or("9");
 const dot = str(".");
