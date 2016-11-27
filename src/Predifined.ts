@@ -1,7 +1,7 @@
 import {
-    iff, iffNot, 
+    iff, iffNot,
     str, notStr, anyChar,
-    StringParserBuilder,
+    Parser, ParserBuilder, StringParserBuilder,
 } from "./FluentBuilder";
 
 export const lineEnd = str("\n");
@@ -28,4 +28,13 @@ export const bool = str("true").or("false");
 
 export function quoted(quoteParser: StringParserBuilder) {
     return quoteParser.followedBy(quoteParser.not().anyNumber()).followedBy(quoteParser);
+}
+
+export interface BinaryConstructor<TExp, TOp> {
+    new (l: TExp, op: TOp, r: TExp): TExp;
+}
+export function binary<TExp, TOp>(
+    expParser: ParserBuilder<string, TExp>, opParser: Parser<string, TOp>, con: BinaryConstructor<TExp, TOp>,
+    ): ParserBuilder<string, TExp> {
+        return expParser.followedBy(opParser).followedBy(expParser).produce(con).or(expParser);
 }

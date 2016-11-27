@@ -1,7 +1,5 @@
 Short list
 ===============
-- Add predefined macro:
-    * binary expression
 - StringBuilder:
     * ignore case option
 - toString:
@@ -9,6 +7,7 @@ Short list
     * parsers
 - Consider make parser() parser in ParserBuilder
 - Explan:
+    * use predefined for parsing
     * error recovery
 
 Long list

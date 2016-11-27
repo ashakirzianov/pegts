@@ -1,10 +1,13 @@
 import { Parser, Input, Fail } from "./Core";
 import { ParserBuilder, builder } from "./ParserBuilder";
 
+export { Parser } from "./Core";
+
 export {
     startsWith,
     either,
     atLeastOne, anyNumberOf, maybe, iff, iffNot,
+    ParserBuilder,
 } from "./ParserBuilder";
 
 export {
