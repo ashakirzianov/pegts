@@ -11,19 +11,16 @@ import {
     recursive,
 } from "../src/fluentBuilder";
 
-const whiteSpaces = str(" ").atLeastOne();
-
-const digit = str("0").or("1").or("2").or("3").or("4").or("5").or("6").or("7").or("8").or("9");
-const num = digit.atLeastOne();
+import * as pre from "../src/Predefined";
 
 const add = str("+").parser;
 const sub = str("-").parser;
 const mult = str("*").parser;
 const div = str("/").parser;
 
-const trivia = startsWith(whiteSpaces.maybe().parser).produce(Trivia);
+const trivia = pre.trivia.produce(Trivia);
 
-const numLiteral = trivia.followedBy(num).produce(NumLiteral);
+const numLiteral = trivia.followedBy(pre.float).produce(NumLiteral);
 const literal = numLiteral;
 
 const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(Special);
@@ -33,16 +30,8 @@ const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(Specia
 const expression = recursive<Expression>();
 
 const literalExpression = literal.produce(LiteralExpression);
-const multExpression = literalExpression
-    .followedBy(multPrescOperator)
-    .followedBy(literalExpression)
-    .produce<Expression>(BinaryExpression)
-    .or(literalExpression);
-const addExpression = multExpression
-    .followedBy(addPrescOperator)
-    .followedBy(multExpression)
-    .produce<Expression>(BinaryExpression)
-    .or(multExpression);
+const multExpression = pre.binary(literalExpression, multPrescOperator, BinaryExpression);
+const addExpression = pre.binary(multExpression, addPrescOperator, BinaryExpression);
 
 expression.set(addExpression);
 

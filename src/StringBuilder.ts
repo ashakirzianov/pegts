@@ -1,5 +1,6 @@
 import { Parser, Input, Success, Fail } from "./Core";
 import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
+import { ParserBuilder, Constructor, builder } from "./ParserBuilder";
 
 export function prefix(str: string): Parser<string, string> {
     return new PrefixParser(str);
@@ -18,11 +19,11 @@ export function notStr(sob: StringOrParser): StringParserBuilder {
 }
 
 export function star(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s)));
+    return new StringParserBuilderImp(adopt(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function plus(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s)));
+    return new StringParserBuilderImp(adopt(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function question(sob: StringOrParser): StringParserBuilder {
@@ -76,6 +77,8 @@ function parser(sob: StringOrParser): Parser<string, string> {
 
 export interface StringParserBuilder extends Parser<string, string> {
     readonly parser: Parser<string, string>;
+    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
+    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
     or(other: StringOrParser): StringParserBuilder;
     followedBy(next: StringOrParser): StringParserBuilder;
     atLeastOne(): StringParserBuilder;
@@ -86,6 +89,14 @@ export interface StringParserBuilder extends Parser<string, string> {
 
 class StringParserBuilderImp implements Parser<string, string> {
     constructor(readonly parser: Parser<string, string>) {}
+
+    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
+        return builder(this.parser).produce(con);
+    }
+
+    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR> {
+        return builder(this.parser).adopt(f);
+    }
 
     parse(input: Input<string>) {
         return this.parser.parse(input);
