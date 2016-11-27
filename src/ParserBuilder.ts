@@ -3,7 +3,7 @@ import { WeakParserChainBuilder } from "./WeakParserChainBuilder";
 import { ParserChainBuilder1, ParserChainBuilder2 } from "./StrongParserChainBuilder";
 
 import {
-    sequence, choice, zeroMore, oneMore,
+    sequence, choice, zeroMore, oneMore, optional, and, not,
     adopt,
     Pair, Many,
 } from "./Operators";
@@ -16,12 +16,20 @@ export function builder<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO> {
     return new ParserBuilderBase(parser);
 }
 
+export function either<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO> {
+    return builder(parser);
+}
+
 export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>) {
     return new ManyParserBuilderImp(zeroMore(parser));
 }
 
 export function atLeastOne<TI, TO>(parser: Parser<TI, TO>) {
     return new ManyParserBuilderImp(oneMore(parser));
+}
+
+export function maybe<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO | undefined> {
+    return builder(optional(parser));
 }
 
 export interface Constructor<T1, TR> {

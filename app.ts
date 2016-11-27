@@ -1,4 +1,4 @@
-import explanParser from "./examples/explanparser";
+import explanParser from "./examples/ExplanParser";
 
 function ThrowError(message: string | undefined = undefined): never {
     throw new Error(message);

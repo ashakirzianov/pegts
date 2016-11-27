@@ -3,16 +3,14 @@ import { ParserBuilder, builder } from "./ParserBuilder";
 
 export {
     startsWith,
+    either,
     atLeastOne, anyNumberOf,
+    maybe,
 } from "./ParserBuilder";
 
 export {
     string, stringInput,
 } from "./StringBuilder";
-
-export function either<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO> {
-    return builder(parser);
-}
 
 export function recursive<TO>() {
     return new RecursiveParser<string, TO>();
