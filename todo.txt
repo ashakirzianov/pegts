@@ -1,5 +1,10 @@
 Short list
 ===============
+- Fluent:
+    * zeroMore postfix
+    * oneMore postfix
+    * maybe postfix
+    * not Postfix
 - Add predefined parsers:
     * digit
     * number
