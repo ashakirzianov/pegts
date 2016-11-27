@@ -5,13 +5,13 @@ export class Input<TInput> {
 export type Result<TInput, TOutput> = Success<TInput, TOutput> | Fail<TInput>;
 
 export class Success<TInput, TOutput> {
-    constructor(readonly value: TOutput, readonly next: Input<TInput>, readonly lookAhead: number) {}
     readonly success: true = true;
+    constructor(readonly value: TOutput, readonly next: Input<TInput>, readonly lookAhead: number) {}
 }
 
 export class Fail<TInput> {
-    constructor(readonly lookAhead: number) {}
     readonly success: false = false;
+    constructor(readonly lookAhead: number) {}
 }
 
 export interface Parser<TInput, TOutput> {

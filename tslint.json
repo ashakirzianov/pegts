@@ -1,0 +1,23 @@
+{
+    "extends": "tslint:latest",
+    "rules": {
+        "max-line-length": [
+            true,
+            150
+        ],
+        "member-access": [
+            false
+        ],
+        "arrow-parens": false,
+        "ordered-imports": [
+            false
+        ],
+        "new-parens": false,
+        "interface-name": [
+            false
+        ],
+        "max-classes-per-file": [
+            false
+        ]
+    }
+}

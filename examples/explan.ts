@@ -54,14 +54,14 @@ export class Trivia {
 }
 
 export class Special {
-    constructor(readonly trivia: Trivia, readonly string: string) { }
+    constructor(readonly trivia: Trivia, readonly str: string) { }
 }
 
 export abstract class Expression {
     evalRoot(): Value {
         return this.eval(new Environment());
     }
-    
+
     abstract eval(env: Environment): Value;
 }
 
@@ -79,7 +79,7 @@ export class BinaryExpression extends Expression {
     }
 
     private evalNum(leftVal: NumValue, rightVal: NumValue): Value {
-        switch (this.op.string) {
+        switch (this.op.str) {
             case "+":
                 return new NumValue(leftVal.value + rightVal.value);
             case "-":
@@ -89,7 +89,7 @@ export class BinaryExpression extends Expression {
             case "/":
                 return new NumValue(leftVal.value / rightVal.value);
             default:
-                return operatorMismatch(leftVal, rightVal, this.op.string);
+                return operatorMismatch(leftVal, rightVal, this.op.str);
         }
     }
 }

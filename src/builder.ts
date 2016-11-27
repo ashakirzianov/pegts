@@ -3,7 +3,7 @@ import {
     sequence, choice, zeroMore, oneMore, optional,
     and, not,
     adopt,
-    Pair, Many
+    Pair, Many,
 } from "./operators";
 import { Constructor1 } from "./stronglytypedbuilder";
 
@@ -84,6 +84,8 @@ export function either<TI, TO>(parser: Parser<TI, TO>) {
 }
 
 export class EitherBuilder<TI, TO> implements Parser<TI, TO> {
+    readonly parser: Parser<TI, TO> = this.actualParser();
+
     constructor(private readonly currParser: Parser<TI, TO>, protected readonly parent: Parser<TI, TO> | undefined = undefined) {}
 
     parse(input: Input<TI>) {
@@ -94,18 +96,18 @@ export class EitherBuilder<TI, TO> implements Parser<TI, TO> {
         return new EitherBuilder(otherParser, this);
     }
 
-    readonly parser: Parser<TI, TO> = this.actualParser();
-
     private actualParser() {
         return this.parent ? choice(this.parent, this.currParser) : this.currParser;
     }
 }
 
-export function string(string: string) {
-    return new EitherStringBuilder(string);
+export function string(str: string) {
+    return new EitherStringBuilder(str);
 }
 
 export class EitherStringBuilder implements Parser<string, string> {
+    readonly parser: Parser<string, string> = this;
+
     constructor(readonly prefix: string, readonly parent: EitherStringBuilder | undefined = undefined) {}
 
     parse(input: Input<string>) {
@@ -115,8 +117,6 @@ export class EitherStringBuilder implements Parser<string, string> {
     or(other: string) {
         return new EitherStringBuilder(other, this);
     }
-
-    readonly parser: Parser<string, string> = this;
 
     private actualParser(): Parser<string, string> {
         return this.parent ? choice<string, string>(this.parent.actualParser(), prefix(this.prefix)) : prefix(this.prefix);
