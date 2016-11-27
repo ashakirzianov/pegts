@@ -1,15 +1,10 @@
-- Add examples
 - Add tests
 - Config gulp for tslint extension
-- Separate public/private interfaces in builder
 - Try code generation for strongly typed builders
 - Implement cached parser
 - Add fluent syntax:
-    * either/or
-    * atLeastOne/anyNumberOf
     * maybe
     * if/ifNot
-    * reduce
 - Add predefined parsers:
     * digit
     * number
@@ -18,7 +13,13 @@
     * single-line comment
     * multi-line comment
     * standard trivia
+- Add predefined macro:
+    * binary expression
 - Improve type inference
 - toString:
     * explan
     * parsers
+- Consider proper builders design
+- Consider make parser() parser in ParserBuilder
+- Consider harden input parameter requirements from Parser to ParserBuilder
+- Use capital letters for file names

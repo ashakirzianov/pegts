@@ -1,29 +1,26 @@
 import { Parser } from "./core";
+import { ParserBuilder, builder } from "./ParserBuilder";
 import { sequence, adopt, flatPegPair } from "./operators";
-
-export function parse<TI>(parser: Parser<TI, any>) {
-    return new ParserBuilder(parser);
-}
 
 export interface ConstructorAny {
     new(...params: any[]): any;
 }
 
-export class ParserBuilder<TI> {
-    constructor(readonly parser: Parser<TI, any>, readonly parent: ParserBuilder<TI> | undefined = undefined) {}
+export class WeakParserChainBuilder<TI> {
+    constructor(readonly parser: Parser<TI, any>, readonly parent: WeakParserChainBuilder<TI> | undefined = undefined) {}
 
-    produce(con: ConstructorAny): Parser<TI, any> {
-        return this.make((...params: any[]) => {
+    produce(con: ConstructorAny): ParserBuilder<TI, any> {
+        return this.adopt((...params: any[]) => {
             return new (Function.prototype.bind.apply(con, [undefined].concat(params)));
         });
     }
 
-    make(f: (...params: any[]) => any) {
-        return adopt(this.actualParser(), pairOrAny => f.apply(undefined, flatPegPair(pairOrAny)));
+    adopt(f: (...params: any[]) => any) {
+        return builder(adopt(this.actualParser(), pairOrAny => f.apply(undefined, flatPegPair(pairOrAny))));
     }
 
     followedBy(otherParser: Parser<TI, any>) {
-        return new ParserBuilder<TI>(otherParser, this);
+        return new WeakParserChainBuilder<TI>(otherParser, this);
     }
 
     protected actualParser(): Parser<TI, any> {
