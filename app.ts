@@ -7,4 +7,4 @@ const source = " 42 + 13   *2";
 const parsingResult = explanParser(source);
 const tree = parsingResult.success ? parsingResult.value : ThrowError("Can not parse source");
 const result = tree.evalRoot();
-"The End";
+const end = "The End";

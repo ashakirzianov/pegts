@@ -1,6 +1,6 @@
-import { Parser } from "./core";
+import { Parser } from "./Core";
 import { ParserBuilder, builder } from "./ParserBuilder";
-import { sequence, adopt, flatPegPair } from "./operators";
+import { sequence, adopt, flatPegPair } from "./Operators";
 
 export interface ConstructorAny {
     new(...params: any[]): any;

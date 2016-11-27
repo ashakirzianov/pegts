@@ -1,5 +1,5 @@
-import { Parser, Input, Success, Fail } from "./core";
-import { choice } from "./operators";
+import { Parser, Input, Success, Fail } from "./Core";
+import { choice } from "./Operators";
 
 export function prefix(str: string): Parser<string, string> {
     return new PrefixParser(str);

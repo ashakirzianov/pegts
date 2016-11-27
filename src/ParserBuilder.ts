@@ -1,12 +1,12 @@
-import { Parser, Input, Success, Fail } from "./core";
-import { WeakParserChainBuilder } from "./weaklytypedbuilder";
-import { ParserChainBuilder1, ParserChainBuilder2 } from "./stronglytypedbuilder";
+import { Parser, Input, Success, Fail } from "./Core";
+import { WeakParserChainBuilder } from "./WeakParserChainBuilder";
+import { ParserChainBuilder1, ParserChainBuilder2 } from "./StrongParserChainBuilder";
 
 import {
     sequence, choice, zeroMore, oneMore,
     adopt,
     Pair, Many,
-} from "./operators";
+} from "./Operators";
 
 export function startsWith<TI, TO>(parser: Parser<TI, TO>): ParserChainBuilder1<TI, TO> {
     return new WeakParserChainBuilder<TI>(parser) as ParserChainBuilder1<TI, TO>;

@@ -1,4 +1,4 @@
-import { Parser } from "../src/core";
+import { Parser } from "../src/Core";
 import {
     Trivia, Special,
     Expression, BinaryExpression,

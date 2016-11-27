@@ -1,7 +1,7 @@
 {
   "name": "peg-ts",
   "version": "0.0.1",
-  "description": "Peg operators for TypeScript",
+  "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
   "scripts": {
     "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",

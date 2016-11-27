@@ -1,4 +1,4 @@
-import { Parser, Input, Fail } from "./core";
+import { Parser, Input, Fail } from "./Core";
 import { ParserBuilder, builder } from "./ParserBuilder";
 
 export {
