@@ -50,7 +50,7 @@ export class Environment {
 }
 
 export class Trivia {
-    constructor(readonly trivia: string[]) { }
+    constructor(readonly trivia: string) { }
 }
 
 export class Special {
@@ -58,6 +58,10 @@ export class Special {
 }
 
 export abstract class Expression {
+    evalRoot(): Value {
+        return this.eval(new Environment());
+    }
+    
     abstract eval(env: Environment): Value;
 }
 

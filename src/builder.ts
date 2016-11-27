@@ -2,104 +2,80 @@ import { Parser, Input, Success, Fail } from "./core";
 import {
     sequence, choice, zeroMore, oneMore, optional,
     and, not,
-    produce,
+    adopt,
     Pair, Many
 } from "./operators";
+import { Constructor1 } from "./stronglytypedbuilder";
 
 import { prefix } from "./string";
-export { prefix } from "./string";
 
-export interface Constructor1<T1, TR> {
-    new (p1: T1) : TR;
+export { makeInput as stringInput } from "./string"
+export { parse as startsWith } from "./stronglytypedbuilder";
+export { parse as jsParse } from "./weaklytypedbuilder";
+export {
+    optional as maybe,
+} from "./operators";
+
+export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>) {
+    return new ManyParserBuilder(zeroMore(parser));
 }
 
-export interface Constructor2<T1, T2, TR> {
-    new (p1: T1, p2: T2) : TR;
+export function atLeastOne<TI, TO>(parser: Parser<TI, TO>) {
+    return new ManyParserBuilder(oneMore(parser));
 }
 
-export interface Constructor3<T1, T2, T3, TR> {
-    new (p1: T1, p2: T2, p3: T3) : TR;
+function builder<TI, TO>(parser: Parser<TI, TO>) {
+    return new ParserBuilderBase(parser);
 }
 
-export interface Constructor4<T1, T2, T3, T4, TR> {
-    new (p1: T1, p2: T2, p3: T3, p4: T4) : TR;
+function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {
+    return builder(parser).adopt(f);
 }
 
-export function parse<TI, TO>(parser: Parser<TI, TO>) {
-    return new StartBuilder(parser);
+export class ParserBuilderBase<TI, TO> implements Parser<TI, TO> {
+    constructor(readonly parser: Parser<TI, TO>) {}
+
+    parse(input: Input<TI>) {
+        return this.parser.parse(input);
+    }
+
+    produce<TR>(con: Constructor1<TO, TR>) {
+        return new ParserBuilderBase(adopt(this.parser, v => new con(v)));
+    }
+
+    adopt<TR>(f: (v: TO) => TR) {
+        return new ParserBuilderBase(adopt(this.parser, f));
+    }
+
+    // or(otherParser: Parser<TI, TO>) {
+    //     return new ParserBuilderBase(choice(this.parser, otherParser));
+    // }
 }
 
-export function many<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Many<TO>> {
-    return zeroMore(parser);
-}
+// interface IManyParserBuilder<TI, T> {
+//     reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): Parser<TI, T>;
+//     reduceG<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): Parser<TI, U>;
+//     reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): Parser<TI, T>;
+//     reduceRightG<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): Parser<TI, U>;
+// }
 
-export function atLeastOne<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Many<TO>> {
-    return oneMore(parser);
-}
+export class ManyParserBuilder<TI, TO> extends ParserBuilderBase<TI, Many<TO>> {
+    constructor(parser: Parser<TI, Many<TO>>) { super(parser); }
 
-export class StartBuilder<TI, TO1> {
-    constructor(readonly parser: Parser<TI, TO1>) {}
-
-    produce<T>(con: Constructor1<TO1, T>): Parser<TI, T> {
-        return produce(this.parser, v => new con(v));
+    reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+        return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
-    then<TO2>(parser: Parser<TI, TO2>): Then1Builder<TI, TO1, TO2> {
-        return new Then1Builder<TI, TO1, TO2>(parser, this);
+    reduceG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U) {
+        return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
-    actualParser() {
-        return this.parser;
-    }
-}
-
-export class Then1Builder<TI, TO1, TO2> {
-    constructor(readonly parser: Parser<TI, TO2>, readonly parent: StartBuilder<TI, TO1>) {}
-
-    produce<T>(con: Constructor2<TO1, TO2, T>): Parser<TI, T> {
-        return produce(
-            this.actualParser(),
-            v => new con(v.left, v.right));
+    reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+        return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 
-    then<TO3>(parser: Parser<TI, TO3>) {
-        return new Then2Builder<TI, TO1, TO2, TO3>(parser, this);
-    }
-
-    actualParser() {
-        return sequence(this.parent.actualParser(), this.parser);
-    }
-}
-
-export class Then2Builder<TI, TO1, TO2, TO3> {
-    constructor(readonly parser: Parser<TI, TO3>, readonly parent: Then1Builder<TI, TO1, TO2>) {}
-
-    produce<T>(con: Constructor3<TO1, TO2, TO3, T>): Parser<TI, T> {
-        return produce(
-            this.actualParser(),
-            v => new con(v.left.left, v.left.right, v.right));
-    }
-
-    then<TO4>(parser: Parser<TI, TO4>) {
-        return new Then3Builder<TI, TO1, TO2, TO3, TO4>(parser, this);
-    }
-
-    actualParser() {
-        return sequence(this.parent.actualParser(), this.parser);
-    }
-}
-
-export class Then3Builder<TI, TO1, TO2, TO3, TO4> {
-    constructor(readonly parser: Parser<TI, TO4>, readonly parent: Then2Builder<TI, TO1, TO2, TO3>) {}
-
-    produce<T>(con: Constructor4<TO1, TO2, TO3, TO4, T>): Parser<TI, T> {
-        return produce(
-            this.actualParser(),
-            v => new con(v.left.left.left, v.left.left.right, v.left.right, v.right));
-    }
-
-    actualParser() {
-        return sequence(this.parent.actualParser(), this.parser);
+    reduceRightG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U) {
+        return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 }
 
@@ -108,7 +84,7 @@ export function either<TI, TO>(parser: Parser<TI, TO>) {
 }
 
 export class EitherBuilder<TI, TO> implements Parser<TI, TO> {
-    constructor(readonly parser: Parser<TI, TO>, readonly parent: Parser<TI, TO> | undefined = undefined) {}
+    constructor(private readonly currParser: Parser<TI, TO>, protected readonly parent: Parser<TI, TO> | undefined = undefined) {}
 
     parse(input: Input<TI>) {
         return this.actualParser().parse(input);
@@ -118,12 +94,14 @@ export class EitherBuilder<TI, TO> implements Parser<TI, TO> {
         return new EitherBuilder(otherParser, this);
     }
 
+    readonly parser: Parser<TI, TO> = this.actualParser();
+
     private actualParser() {
-        return this.parent ? choice(this.parent, this.parser) : this.parser;
+        return this.parent ? choice(this.parent, this.currParser) : this.currParser;
     }
 }
 
-export function startsWith(string: string) {
+export function string(string: string) {
     return new EitherStringBuilder(string);
 }
 
@@ -138,7 +116,9 @@ export class EitherStringBuilder implements Parser<string, string> {
         return new EitherStringBuilder(other, this);
     }
 
-    actualParser(): Parser<string, string> {
+    readonly parser: Parser<string, string> = this;
+
+    private actualParser(): Parser<string, string> {
         return this.parent ? choice<string, string>(this.parent.actualParser(), prefix(this.prefix)) : prefix(this.prefix);
     }
 }
