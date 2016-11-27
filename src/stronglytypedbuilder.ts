@@ -12,7 +12,7 @@ export interface Constructor1<T1, TR> {
 export interface ParserBuilder1<TI, T1> {
     produce<TR>(con: Constructor1<T1, TR>): Parser<TI, TR>;
     make<TR>(f: (p1: T1) => TR): Parser<TI, TR>;
-    followedBy<TN>(otherParser: Parser<TI, TN>): ParserBuilder2<TI, T1,TN>;
+    followedBy<TN>(otherParser: Parser<TI, TN>): ParserBuilder2<TI, T1, TN>;
 }
 
 export interface Constructor2<T1, T2, TR> {
@@ -72,5 +72,5 @@ export interface Constructor7<T1, T2, T3, T4, T5, T6, T7, TR> {
 export interface ParserBuilder7<TI, T1, T2, T3, T4, T5, T6, T7> {
     produce<TR>(con: Constructor7<T1, T2, T3, T4, T5, T6, T7, TR>): Parser<TI, TR>;
     make<TR>(f: (p1: T1, p2: T2, p3: T3, p4: T4, p5: T5, p6: T6, p7: T7) => TR): Parser<TI, TR>;
-    //followedBy<TN>(otherParser: Parser<TI, TN>): ParserBuilder8<TI, T1, T2, T3, T4, T5, T6, T7, TN>;
+    // followedBy<TN>(otherParser: Parser<TI, TN>): ParserBuilder8<TI, T1, T2, T3, T4, T5, T6, T7, TN>;
 }

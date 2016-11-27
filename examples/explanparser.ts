@@ -14,7 +14,7 @@ import {
 const whiteSpace = string(" ").parser;
 
 const digit = string("0").or("1").or("2").or("3").or("4").or("5").or("6").or("7").or("8").or("9").parser;
-const number = atLeastOne(digit).reduce((acc, s) => acc + s, "");
+const num = atLeastOne(digit).reduce((acc, s) => acc + s, "");
 
 const add = string("+").parser;
 const sub = string("-").parser;
@@ -23,7 +23,7 @@ const div = string("/").parser;
 
 const trivia = startsWith(anyNumberOf(whiteSpace).reduce((acc, s) => acc + s, "").parser).produce(Trivia);
 
-const numLiteral = startsWith(trivia).followedBy(number).produce(NumLiteral);
+const numLiteral = startsWith(trivia).followedBy(num).produce(NumLiteral);
 const literal = numLiteral;
 
 const addPrescOperator = startsWith(trivia)

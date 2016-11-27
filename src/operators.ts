@@ -12,7 +12,7 @@ export function flatPegPair(pairOrAny: any): any[] { // TODO: potential problems
     return pairOrAny.pegLeft && pairOrAny.pegRight ? flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight)) : [pairOrAny];
 }
 
-export type Many<TO> = Array<TO>;
+export type Many<TO> = TO[];
 function collection<TO>(outputs: TO[]): Many<TO> {
     return outputs;
 }
