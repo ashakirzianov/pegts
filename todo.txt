@@ -1,4 +1,24 @@
 - Add examples
-- Add test
+- Add tests
 - Config gulp for tslint extension
 - Separate public/private interfaces in builder
+- Try code generation for strongly typed builders
+- Implement cached parser
+- Add fluent syntax:
+    * either/or
+    * atLeastOne/anyNumberOf
+    * maybe
+    * if/ifNot
+    * reduce
+- Add predefined parsers:
+    * digit
+    * number
+    * string ("", '')
+    * boolean
+    * single-line comment
+    * multi-line comment
+    * standard trivia
+- Improve type inference
+- toString:
+    * explan
+    * parsers

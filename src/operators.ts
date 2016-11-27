@@ -1,11 +1,15 @@
 import { Parser, Input, Result, Success, Fail } from "./core";
 
-export type Pair<TOL, TOR> = { left: TOL, right: TOR };
+export type Pair<TOL, TOR> = { pegLeft: TOL, pegRight: TOR };
 function pair<TOL, TOR>(left: TOL, right: TOR): Pair<TOL, TOR> {
     return {
-        left: left,
-        right: right,
+        pegLeft: left,
+        pegRight: right,
     };
+}
+
+export function flatPegPair(pairOrAny: any): any[] { // TODO: potential problems with name collisions
+    return pairOrAny.pegLeft && pairOrAny.pegRight ? flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight)) : [pairOrAny];
 }
 
 export type Many<TO> = Array<TO>;
@@ -13,12 +17,12 @@ function collection<TO>(outputs: TO[]): Many<TO> {
     return outputs;
 }
 
-export function sequence<TI, TOL, TOR>(left: Parser<TI, TOL>, right: Parser<TI, TOR>) : Parser<TI, Pair<TOL, TOR>> {
+export function sequence<TI, TOL, TOR>(left: Parser<TI, TOL>, right: Parser<TI, TOR>): Parser<TI, Pair<TOL, TOR>> {
     return new Sequence(left, right);
 }
 
 class Sequence<TI, TOL, TOR> implements Parser<TI, Pair<TOL, TOR>> {
-    constructor(readonly left: Parser<TI, TOL>, readonly right: Parser<TI, TOR>) {}
+    constructor(readonly left: Parser<TI, TOL>, readonly right: Parser<TI, TOR>) { }
 
     parse(input: Input<TI>): Result<TI, Pair<TOL, TOR>> {
         const lr = this.left.parse(input);
@@ -38,7 +42,7 @@ export function choice<TI, TO>(left: Parser<TI, TO>, right: Parser<TI, TO>): Par
 }
 
 class Choice<TI, TO> implements Parser<TI, TO> {
-    constructor(readonly left: Parser<TI, TO>, readonly right: Parser<TI, TO>) {}
+    constructor(readonly left: Parser<TI, TO>, readonly right: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const lr = this.left.parse(input);
@@ -54,26 +58,27 @@ class Choice<TI, TO> implements Parser<TI, TO> {
 }
 
 function parseZeroMore<TI, TO>(parser: Parser<TI, TO>, input: Input<TI>) {
-        let result = new Array<TO>();
-        let lookAhead = 0;
-        let next = input;
-        let curr = parser.parse(input);
-        while (curr.success) {
-            lookAhead += curr.lookAhead;
-            next = curr.next;
-            result.push(curr.value);
-            curr = parser.parse(next);
-        }
+    let result = new Array<TO>();
+    let lookAhead = 0;
+    let next = input;
+    let curr = parser.parse(input);
+    while (curr.success) {
         lookAhead += curr.lookAhead;
-
-        return new Success(collection(result), next, lookAhead);
+        next = curr.next;
+        result.push(curr.value);
+        curr = parser.parse(next);
     }
+    lookAhead += curr.lookAhead;
+
+    return new Success(collection(result), next, lookAhead);
+}
+
 export function zeroMore<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Many<TO>> {
     return new ZeroMore(parser);
 }
 
 class ZeroMore<TI, TO> implements Parser<TI, Many<TO>> {
-    constructor(readonly parser: Parser<TI, TO>) {}
+    constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         return parseZeroMore(this.parser, input);
@@ -85,7 +90,7 @@ export function oneMore<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Many<TO>> {
 }
 
 class OneMore<TI, TO> implements Parser<TI, Many<TO>> {
-    constructor(readonly parser: Parser<TI, TO>) {}
+    constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const zeroMore = parseZeroMore(this.parser, input);
@@ -98,7 +103,7 @@ export function optional<TI, TO>(parser: Parser<TI, TO>): Parser<TI, TO | undefi
 }
 
 class Optional<TI, TO> implements Parser<TI, TO | undefined> {
-    constructor(readonly parser: Parser<TI, TO>) {}
+    constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
@@ -111,7 +116,7 @@ export function and<TI, TO>(parser: Parser<TI, TO>): Parser<TI, TO> {
 }
 
 class AndPredicate<TI, TO> implements Parser<TI, TO> {
-    constructor(readonly parser: Parser<TI, TO>) {}
+    constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
@@ -126,7 +131,7 @@ export function not<TI, TO>(parser: Parser<TI, TO>): Parser<TI, undefined> {
 }
 
 class NotPredicate<TI, TO> implements Parser<TI, undefined> {
-    constructor(readonly parser: Parser<TI, TO>) {}
+    constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
@@ -134,15 +139,15 @@ class NotPredicate<TI, TO> implements Parser<TI, undefined> {
     }
 }
 
-export function produce<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
-    return new Produce(parser, f);
+export function adopt<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
+    return new Adopt(parser, f);
 }
 
-class Produce<TI, TO, TR> implements Parser<TI, TR> {
-    constructor(readonly parser: Parser<TI, TO>, readonly f: (v: TO) => TR) {}
+class Adopt<TI, TO, TR> implements Parser<TI, TR> {
+    constructor(readonly parser: Parser<TI, TO>, readonly f: (v: TO) => TR) { }
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
-        return r.success ? new Success(this.f(r.value), r.next, r.lookAhead) : r;
+        return r.success ? new Success(this.f(r.value), r.next, r.lookAhead) : new Fail(r.lookAhead);
     }
 }

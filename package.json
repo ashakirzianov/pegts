@@ -4,7 +4,7 @@
   "description": "Peg operators for TypeScript",
   "main": "dist/index.js",
   "scripts": {
-    "lint": "tslint ./src/**/*.ts",
+    "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",
     "build": "tsc"
   },
   "repository": {
@@ -20,7 +20,7 @@
   "devDependencies": {
     "tslint": "4.0.2",
     "ts-node": "^1.7.0",
-    "typescript": "^2.0.10"
+    "typescript": "^2.0.6"
   },
   "author": "Anton Shakirzianov",
   "license": "MIT",
