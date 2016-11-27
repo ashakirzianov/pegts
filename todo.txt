@@ -20,7 +20,6 @@ Short list
 - Consider make parser() parser in ParserBuilder
 - Consider harden input parameter requirements from Parser to ParserBuilder
 - Use capital letters for file names
-- Explan: rename Environment to DynamicEnvironment
 
 Long list
 ===============

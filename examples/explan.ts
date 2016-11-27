@@ -41,8 +41,8 @@ function operatorMismatch(left: Value, right: Value, op: string) {
 }
 
 export type KeyValue = { key: string, value: Value };
-export class Environment {
-    constructor(readonly kvp: KeyValue | undefined = undefined, readonly parent: Environment | undefined = undefined) { }
+export class DynamicEnvironment {
+    constructor(readonly kvp: KeyValue | undefined = undefined, readonly parent: DynamicEnvironment | undefined = undefined) { }
 
     get(key: string): Value | undefined {
         return this.kvp && this.kvp.key === key ? this.kvp.value : this.parent && this.parent.get(key);
@@ -59,16 +59,16 @@ export class Special {
 
 export abstract class Expression {
     evalRoot(): Value {
-        return this.eval(new Environment());
+        return this.eval(new DynamicEnvironment());
     }
 
-    abstract eval(env: Environment): Value;
+    abstract eval(env: DynamicEnvironment): Value;
 }
 
 export class BinaryExpression extends Expression {
     constructor(readonly left: Expression, readonly op: Special, readonly right: Expression) { super(); }
 
-    eval(env: Environment): Value {
+    eval(env: DynamicEnvironment): Value {
         const leftVal = this.left.eval(env);
         const rightVal = this.right.eval(env);
         if (leftVal.kind === "num") {
@@ -97,7 +97,7 @@ export class BinaryExpression extends Expression {
 export class ParenthesisExpression extends Expression {
     constructor(readonly lp: Special, readonly exp: Expression, readonly rp: Expression) { super(); }
 
-    eval(env: Environment) {
+    eval(env: DynamicEnvironment) {
         return this.exp.eval(env);
     }
 }
@@ -127,7 +127,7 @@ export class BoolLiteral {
 export class LiteralExpression extends Expression {
     constructor(readonly literal: Literal) { super(); }
 
-    eval(env: Environment) {
+    eval(env: DynamicEnvironment) {
         return this.literal.value();
     }
 }
