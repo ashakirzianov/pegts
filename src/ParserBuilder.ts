@@ -32,6 +32,14 @@ export function maybe<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO | un
     return builder(optional(parser));
 }
 
+export function iff<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+    return new PredicateParserBuilderImp(and(parser));
+}
+
+export function iffNot<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+    return new PredicateParserBuilderImp(not(parser));
+}
+
 export interface Constructor<T1, TR> {
     new (p1: T1) : TR;
 }
@@ -49,6 +57,10 @@ export interface ManyParserBuilder<TI, TO> extends ParserBuilder<TI, Many<TO>> {
     reduceG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U): ParserBuilder<TI, U>;
     reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO): ParserBuilder<TI, TO>;
     reduceRightG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U): ParserBuilder<TI, U>;
+}
+
+export interface PredicateParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
+    then<TR>(parser: Parser<TI, TR>): ParserBuilder<TI, TR>;
 }
 
 class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
@@ -100,5 +112,13 @@ class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> imple
 
     reduceRightG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U) {
         return adoptBuilder(this.containedParser, rs => rs.reduceRight(callbackfn, initialValue));
+    }
+}
+
+class PredicateParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implements PredicateParserBuilder<TI, TO> {
+    constructor(containedParser: Parser<TI, TO>) { super(containedParser); }
+
+    then<TR>(next: Parser<TI, TR>): ParserBuilder<TI, TR> {
+        return this.followedBy(next).adopt((l, r) => r);
     }
 }

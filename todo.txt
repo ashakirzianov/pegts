@@ -1,8 +1,5 @@
 Short list
 ===============
-- Add fluent syntax:
-    * maybe
-    * if/ifNot
 - Add predefined parsers:
     * digit
     * number

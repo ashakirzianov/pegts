@@ -8,6 +8,14 @@ function pair<TOL, TOR>(left: TOL, right: TOR): Pair<TOL, TOR> {
     };
 }
 
+export function pegPairLeft<TOL, TOR>(pair: Pair<TOL, TOR>): TOL {
+    return pair.pegLeft;
+}
+
+export function pegPairRight<TOL, TOR>(pair: Pair<TOL, TOR>): TOR {
+    return pair.pegRight;
+}
+
 export function flatPegPair(pairOrAny: any): any[] { // TODO: potential problems with name collisions
     return pairOrAny.pegLeft && pairOrAny.pegRight ? flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight)) : [pairOrAny];
 }
@@ -120,9 +128,7 @@ class AndPredicate<TI, TO> implements Parser<TI, TO> {
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
-        return r.success ?
-            new Success(r.value, input, r.lookAhead)
-            : new Fail(r.lookAhead);
+        return r.success ? new Success(r.value, input, r.lookAhead) : r;
     }
 }
 
