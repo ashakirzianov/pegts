@@ -35,7 +35,7 @@ const addExpression = pre.binary(multExpression, addPrescOperator, BinaryExpress
 
 expression.set(addExpression);
 
-const parser = expression;
+export const parser = expression;
 export default function parseString(source: string) {
     return parser.parse(stringInput(source));
 }

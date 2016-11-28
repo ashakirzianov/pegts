@@ -105,6 +105,10 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
     not() {
         return iffNot(this.parser);
     }
+
+    toString() {
+        return this.parser.toString();
+    }
 }
 
 function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {

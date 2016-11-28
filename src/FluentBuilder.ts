@@ -30,4 +30,8 @@ export class RecursiveParser<TI, TO> implements Parser<TI, TO> {
     parse(input: Input<TI>) {
         return this.parser ? this.parser.parse(input) : new Fail(0);
     }
+
+    toString() {
+        return this.parser ? this.parser.toString() : "<null>";
+    }
 }

@@ -54,6 +54,10 @@ class PrefixParser implements Parser<string, string> {
             : new Fail(this.prefix.length);
     }
 
+    toString() {
+        return this.opts && this.opts.caseInsensitive ? `${this.prefix.toLocaleUpperCase()}` : `${this.prefix}`;
+    }
+
     private compare(stream: string): boolean {
         return this.opts && this.opts.caseInsensitive ?
             stream.toLocaleLowerCase().lastIndexOf(this.prefix, 0) === 0
@@ -76,6 +80,10 @@ class NotPrefixParser implements Parser<string, string> {
             new Fail(r.lookAhead)
             : new Success(input.stream.substr(0, r.lookAhead), stringInput(input.stream.substr(r.lookAhead)), r.lookAhead);
     }
+
+    toString() {
+        return `~${this.prefixParser}`;
+    }
 }
 
 class AnyCharParser implements Parser<string, string> {
@@ -83,6 +91,10 @@ class AnyCharParser implements Parser<string, string> {
         return input.stream.length > 0 ?
             new Success(input.stream[0], stringInput(input.stream.substr(1)), 1)
             : new Fail(1);
+    }
+
+    toString() {
+        return `.`;
     }
 }
 
@@ -143,5 +155,9 @@ class StringParserBuilderImp implements Parser<string, string> {
 
     not() {
         return notStr(this.parser);
+    }
+
+    toString() {
+        return this.parser.toString();
     }
 }

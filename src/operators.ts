@@ -43,6 +43,10 @@ class Sequence<TI, TOL, TOR> implements Parser<TI, Pair<TOL, TOR>> {
             return new Fail(lr.lookAhead);
         }
     }
+
+    toString() {
+        return `${this.left}${this.right}`;
+    }
 }
 
 export function choice<TI, TO>(left: Parser<TI, TO>, right: Parser<TI, TO>): Parser<TI, TO> {
@@ -62,6 +66,10 @@ class Choice<TI, TO> implements Parser<TI, TO> {
                 rr.lookAhead >= lr.lookAhead ? rr : new Success(rr.value, rr.next, lr.lookAhead)
                 : new Fail(rr.lookAhead >= lr.lookAhead ? rr.lookAhead : lr.lookAhead);
         }
+    }
+
+    toString() {
+        return `${this.left}|${this.right}`;
     }
 }
 
@@ -91,6 +99,10 @@ class ZeroMore<TI, TO> implements Parser<TI, Many<TO>> {
     parse(input: Input<TI>) {
         return parseZeroMore(this.parser, input);
     }
+
+    toString() {
+        return `(${this.parser})*`;
+    }
 }
 
 export function oneMore<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Many<TO>> {
@@ -103,6 +115,10 @@ class OneMore<TI, TO> implements Parser<TI, Many<TO>> {
     parse(input: Input<TI>) {
         const zeroMore = parseZeroMore(this.parser, input);
         return zeroMore.value.length > 0 ? zeroMore : new Fail(zeroMore.lookAhead);
+    }
+
+    toString() {
+        return `(${this.parser})+`;
     }
 }
 
@@ -117,6 +133,10 @@ class Optional<TI, TO> implements Parser<TI, TO | undefined> {
         const r = this.parser.parse(input);
         return r.success ? r : new Success(undefined, input, r.lookAhead);
     }
+
+    toString() {
+        return `(${this.parser})?`;
+    }
 }
 
 export function and<TI, TO>(parser: Parser<TI, TO>): Parser<TI, TO> {
@@ -129,6 +149,10 @@ class AndPredicate<TI, TO> implements Parser<TI, TO> {
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
         return r.success ? new Success(r.value, input, r.lookAhead) : r;
+    }
+
+    toString() {
+        return `if:${this.parser}`;
     }
 }
 
@@ -143,6 +167,10 @@ class NotPredicate<TI, TO> implements Parser<TI, undefined> {
         const r = this.parser.parse(input);
         return r.success ? new Fail(r.lookAhead) : new Success(undefined, input, r.lookAhead);
     }
+
+    toString() {
+        return `not:${this.parser}`;
+    }
 }
 
 export function adopt<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
@@ -155,5 +183,9 @@ class Adopt<TI, TO, TR> implements Parser<TI, TR> {
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
         return r.success ? new Success(this.f(r.value), r.next, r.lookAhead) : new Fail(r.lookAhead);
+    }
+
+    toString() {
+        return this.parser.toString();
     }
 }

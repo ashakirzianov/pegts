@@ -23,6 +23,10 @@ export class WeakParserChainBuilder<TI> {
         return new WeakParserChainBuilder<TI>(otherParser, this);
     }
 
+    toString() {
+        return this.actualParser().toString();
+    }
+
     protected actualParser(): Parser<TI, any> {
         return this.parent ? sequence(this.parent.actualParser(), this.parser) : this.parser;
     }
