@@ -30,6 +30,10 @@ export class StringValue {
 export class ErrorValue {
     readonly kind: "error" = "error";
     constructor(readonly message: string, readonly parent: Value | undefined = undefined) { }
+
+    toString() {
+        return `Error(${this.message})`;
+    }
 }
 
 function typeMismatch(left: Value, right: Value) {
@@ -51,10 +55,18 @@ export class DynamicEnvironment {
 
 export class Trivia {
     constructor(readonly trivia: string) { }
+
+    toString() {
+        return this.trivia;
+    }
 }
 
 export class Special {
     constructor(readonly trivia: Trivia, readonly str: string) { }
+
+    toString() {
+        return this.trivia + this.str;
+    }
 }
 
 export abstract class Expression {
@@ -78,6 +90,10 @@ export class BinaryExpression extends Expression {
         return new ErrorValue("Operation is not supported"); // TODO: meaningful message
     }
 
+    toString() {
+        return this.left.toString() + this.op.toString() + this.right.toString();
+    }
+
     private evalNum(leftVal: NumValue, rightVal: NumValue): Value {
         switch (this.op.str) {
             case "+":
@@ -95,10 +111,14 @@ export class BinaryExpression extends Expression {
 }
 
 export class ParenthesisExpression extends Expression {
-    constructor(readonly lp: Special, readonly exp: Expression, readonly rp: Expression) { super(); }
+    constructor(readonly lp: Special, readonly exp: Expression, readonly rp: Special) { super(); }
 
     eval(env: DynamicEnvironment) {
         return this.exp.eval(env);
+    }
+
+    toString() {
+        return this.lp.toString() + this.exp.toString() + this.rp.toString();
     }
 }
 
@@ -108,12 +128,20 @@ export class NumLiteral {
     value() {
         return new NumValue(+this.literal);
     }
+
+    toString() {
+        return this.trivia.toString() + this.literal;
+    }
 }
 
 export class StringLiteral {
     constructor(readonly trivia: Trivia, readonly literal: string) {}
     value() {
         return new StringValue(this.literal);
+    }
+
+    toString() {
+        return this.trivia.toString() + this.literal;
     }
 }
 
@@ -122,6 +150,10 @@ export class BoolLiteral {
     value() {
         return new BoolValue(!!this.literal);
     }
+
+    toString() {
+        return this.trivia.toString() + this.literal;
+    }
 }
 
 export class LiteralExpression extends Expression {
@@ -129,5 +161,9 @@ export class LiteralExpression extends Expression {
 
     eval(env: DynamicEnvironment) {
         return this.literal.value();
+    }
+
+    toString() {
+        return this.literal.toString();
     }
 }

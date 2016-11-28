@@ -1,15 +1,5 @@
 Short list
 ===============
-- toString:
-    * explan
-    * parsers
-
-Long list
-===============
-- StringBuilder:
-    * ignore case postfix operator
-    * regex parser
-    * performance optimizations for predefined parsers (using regex)
 - Explan:
     * parenthesis
     * if expression
@@ -18,6 +8,13 @@ Long list
     * tuples
     * constructors
     * pattern matching
+    
+Long list
+===============
+- StringBuilder:
+    * ignore case postfix operator
+    * regex parser
+    * performance optimizations for predefined parsers (using regex)
 - Predefined:
     * exponential form number
     * letter class
