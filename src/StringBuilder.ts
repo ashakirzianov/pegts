@@ -2,8 +2,12 @@ import { Parser, Input, Success, Fail } from "./Core";
 import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
 import { ParserBuilder, Constructor, builder } from "./ParserBuilder";
 
-export function prefix(str: string): Parser<string, string> {
-    return new PrefixParser(str);
+export type StringComparisonOptions = undefined | {
+    readonly caseInsensitive?: boolean;
+};
+
+export function prefix(str: string, opts: StringComparisonOptions = undefined): Parser<string, string> {
+    return new PrefixParser(str, opts);
 }
 
 export function anyChar(): StringParserBuilder {
@@ -39,12 +43,27 @@ class StringInput implements Input<string> {
 }
 
 class PrefixParser implements Parser<string, string> {
-    constructor(readonly prefix: string) {}
+    readonly prefix: string;
+    constructor(prefix: string, readonly opts: StringComparisonOptions = undefined) {
+        this.prefix = this.opts && this.opts.caseInsensitive ? prefix.toLocaleLowerCase() : prefix;
+    }
 
     parse(input: Input<string>) {
-        return input.stream.lastIndexOf(this.prefix, 0) === 0 ?
-            new Success(this.prefix, stringInput(input.stream.substr(this.prefix.length)), this.prefix.length)
+        return this.compare(input.stream) ?
+            new Success(this.match(input.stream), stringInput(input.stream.substr(this.prefix.length)), this.prefix.length)
             : new Fail(this.prefix.length);
+    }
+
+    private compare(stream: string): boolean {
+        return this.opts && this.opts.caseInsensitive ?
+            stream.toLocaleLowerCase().lastIndexOf(this.prefix, 0) === 0
+            : stream.lastIndexOf(this.prefix, 0) === 0;
+    }
+
+    private match(stream: string): string {
+        return this.opts && this.opts.caseInsensitive ?
+        stream.substr(0, this.prefix.length)
+        : this.prefix;
     }
 }
 

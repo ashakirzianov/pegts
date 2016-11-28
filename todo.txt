@@ -1,14 +1,15 @@
 Short list
 ===============
-- Fixes:
-- StringBuilder:
-    * ignore case option
 - toString:
     * explan
     * parsers
 
 Long list
 ===============
+- StringBuilder:
+    * ignore case postfix operator
+    * regex parser
+    * performance optimizations for predefined parsers (using regex)
 - Explan:
     * parenthesis
     * if expression
