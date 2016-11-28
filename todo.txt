@@ -6,13 +6,17 @@ Short list
 - toString:
     * explan
     * parsers
-- Consider make parser() parser in ParserBuilder
-- Explan:
-    * use predefined for parsing
-    * error recovery
 
 Long list
 ===============
+- Explan:
+    * parenthesis
+    * if expression
+    * let expression
+    * func literal
+    * tuples
+    * constructors
+    * pattern matching
 - Predefined:
     * exponential form number
     * letter class
@@ -24,10 +28,11 @@ Long list
     * integration
     * string parsers
     * parser builders
-- Extend explan
+    * performance tests
 - Config gulp for tslint extension
 - Try code generation for strongly typed builders
 - Implement cached parser
 - Consider continuous integration
 - Consider proper builders design
 - Improve type inference
+- ArrayParserBuilder

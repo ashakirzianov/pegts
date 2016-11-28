@@ -45,7 +45,7 @@ export interface Constructor<T1, TR> {
 }
 
 export interface ParserBuilder<TI, TO> extends Parser<TI, TO> {
-    parser(): Parser<TI, TO>;
+    readonly parser: Parser<TI, TO>;
     produce<TR>(con: Constructor<TO, TR>): ParserBuilder<TI, TR>;
     adopt<TR>(f: (v: TO) => TR): ParserBuilder<TI, TR>;
     or(option: Parser<TI, TO>): ParserBuilder<TI, TO>;
@@ -68,46 +68,42 @@ export interface PredicateParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
 }
 
 class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
-    constructor(readonly containedParser: Parser<TI, TO>) {}
-
-    parser(): Parser<TI, TO> {
-        return this.containedParser;
-    }
+    constructor(readonly parser: Parser<TI, TO>) {}
 
     parse(input: Input<TI>) {
-        return this.containedParser.parse(input);
+        return this.parser.parse(input);
     }
 
     produce<TR>(con: Constructor<TO, TR>) {
-        return new ParserBuilderBase(adopt(this.containedParser, v => new con(v)));
+        return new ParserBuilderBase(adopt(this.parser, v => new con(v)));
     }
 
     adopt<TR>(f: (v: TO) => TR) {
-        return new ParserBuilderBase(adopt(this.containedParser, f));
+        return new ParserBuilderBase(adopt(this.parser, f));
     }
 
     or(otherParser: Parser<TI, TO>) {
-        return new ParserBuilderBase(choice<TI, TO>(this.containedParser, otherParser));
+        return new ParserBuilderBase(choice<TI, TO>(this.parser, otherParser));
     }
 
     followedBy<TR>(next: Parser<TI, TR>): ParserChainBuilder2<TI, TO, TR> {
-        return startsWith<TI, TO>(builder(this.containedParser)).followedBy(next);
+        return startsWith<TI, TO>(builder(this.parser)).followedBy(next);
     }
 
     atLeastOne() {
-        return atLeastOne(this.parser());
+        return atLeastOne(this.parser);
     }
 
     anyNumber() {
-        return anyNumberOf(this.parser());
+        return anyNumberOf(this.parser);
     }
 
     maybe() {
-        return maybe(this.parser());
+        return maybe(this.parser);
     }
 
     not() {
-        return iffNot(this.parser());
+        return iffNot(this.parser);
     }
 }
 
@@ -116,27 +112,27 @@ function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {
 }
 
 class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> implements ManyParserBuilder<TI, TO> {
-    constructor(containedParser: Parser<TI, Many<TO>>) { super(containedParser); }
+    constructor(parser: Parser<TI, Many<TO>>) { super(parser); }
 
     reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
-        return adoptBuilder(this.containedParser, rs => rs.reduce(callbackfn, initialValue));
+        return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
     reduceG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U) {
-        return adoptBuilder(this.containedParser, rs => rs.reduce(callbackfn, initialValue));
+        return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
     reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
-        return adoptBuilder(this.containedParser, rs => rs.reduceRight(callbackfn, initialValue));
+        return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 
     reduceRightG<U>(callbackfn: (previousValue: U, currentValue: TO, currentIndex: number, array: TO[]) => U, initialValue: U) {
-        return adoptBuilder(this.containedParser, rs => rs.reduceRight(callbackfn, initialValue));
+        return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 }
 
 class PredicateParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implements PredicateParserBuilder<TI, TO> {
-    constructor(containedParser: Parser<TI, TO>) { super(containedParser); }
+    constructor(parser: Parser<TI, TO>) { super(parser); }
 
     then<TR>(next: Parser<TI, TR>): ParserBuilder<TI, TR> {
         return this.followedBy(next).adopt((l, r) => r);
