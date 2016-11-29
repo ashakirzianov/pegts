@@ -1,13 +1,11 @@
 Short list
 ===============
 - Explan:
-    * parenthesis
-    * if expression
-    * let expression
     * func literal
     * tuples
     * constructors
     * pattern matching
+    * letrec
     
 Long list
 ===============

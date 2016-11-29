@@ -4,7 +4,7 @@ import { ParserBuilder, builder } from "./ParserBuilder";
 export { Parser } from "./Core";
 
 export {
-    startsWith,
+    startsWith, builder,
     either,
     atLeastOne, anyNumberOf, maybe, iff, iffNot,
     ParserBuilder,

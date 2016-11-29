@@ -26,18 +26,14 @@ export const aString = doubleQuoteString.or(singleQuoteString);
 
 export const bool = str("true").or("false");
 
+export const identifier = str("a").or("b").or("c"); // TODO: implement 
+
 export function quoted(quoteParser: StringParserBuilder) {
     return quoteParser.followedBy(quoteParser.not().anyNumber()).followedBy(quoteParser);
 }
 
 export interface BinaryConstructor<TExp, TOp> {
     new (l: TExp, op: TOp, r: TExp): TExp;
-}
-
-function singleBinary<TExp, TOp>(
-    expParser: ParserBuilder<string, TExp>, opParser: Parser<string, TOp>, con: BinaryConstructor<TExp, TOp>,
-    ): ParserBuilder<string, TExp> {
-        return expParser.followedBy(opParser).followedBy(expParser).produce(con).or(expParser);
 }
 
 export function binary<TExp, TOp>(
