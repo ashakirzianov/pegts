@@ -3,6 +3,7 @@ import { WeakParserChainBuilder } from "./WeakParserChainBuilder";
 import { ParserChainBuilder1, ParserChainBuilder2 } from "./StrongParserChainBuilder";
 
 import {
+    pegPairLeft, pegPairRight,
     sequence, choice, zeroMore, oneMore, optional, and, not,
     adopt,
     Pair, Many,

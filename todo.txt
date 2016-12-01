@@ -1,7 +1,6 @@
 Short list
 ===============
 - Explan:
-    * func literal
     * tuples
     * constructors
     * pattern matching
@@ -9,7 +8,9 @@ Short list
     
 Long list
 ===============
+- Implement function form
 - StringBuilder:
+    *** reimplement based on regex
     * ignore case postfix operator
     * regex parser
     * performance optimizations for predefined parsers (using regex)

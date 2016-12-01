@@ -17,7 +17,9 @@ export function pegPairRight<TOL, TOR>(pair: Pair<TOL, TOR>): TOR {
 }
 
 export function flatPegPair(pairOrAny: any): any[] { // TODO: potential problems with name collisions
-    return pairOrAny.pegLeft && pairOrAny.pegRight ? flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight)) : [pairOrAny];
+    return pairOrAny && pairOrAny.pegLeft && pairOrAny.pegRight ?
+        flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight))
+        : [pairOrAny];
 }
 
 export type Many<TO> = TO[];
@@ -156,16 +158,16 @@ class AndPredicate<TI, TO> implements Parser<TI, TO> {
     }
 }
 
-export function not<TI, TO>(parser: Parser<TI, TO>): Parser<TI, undefined> {
+export function not<TI, TO>(parser: Parser<TI, TO>): Parser<TI, Object> {
     return new NotPredicate(parser);
 }
 
-class NotPredicate<TI, TO> implements Parser<TI, undefined> {
+class NotPredicate<TI, TO> implements Parser<TI, Object> {
     constructor(readonly parser: Parser<TI, TO>) { }
 
     parse(input: Input<TI>) {
         const r = this.parser.parse(input);
-        return r.success ? new Fail(r.lookAhead) : new Success(undefined, input, r.lookAhead);
+        return r.success ? new Fail(r.lookAhead) : new Success(new Object(), input, r.lookAhead);
     }
 
     toString() {

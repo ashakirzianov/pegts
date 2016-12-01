@@ -2,8 +2,17 @@ export function evaluate(exp: Expression) {
     return exp.eval(new DynamicEnvironment());
 }
 
-export type Value = NumValue | BoolValue | StringValue | ErrorValue;
-type ValueKind = "num" | "bool" | "string";
+export type Value = NumValue | BoolValue | StringValue | FuncValue | ErrorValue;
+type ValueKind = "num" | "bool" | "string" | "func";
+
+export class FuncValue {
+    readonly kind: "func" = "func";
+    constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment) {}
+
+    toString() {
+        return `F(${this.arg} => ${this.exp})`;
+    }
+}
 
 export class NumValue {
     readonly kind: "num" = "num";
@@ -136,6 +145,12 @@ export class BinaryExpression extends Expression {
                 return new NumValue(leftVal.value * rightVal.value);
             case "/":
                 return new NumValue(leftVal.value / rightVal.value);
+            case "==":
+                return new BoolValue(leftVal.value === rightVal.value);
+            case "<=":
+                return new BoolValue(leftVal.value <= rightVal.value);
+            case ">=":
+                return new BoolValue(leftVal.value >= rightVal.value);
             default:
                 return operatorMismatch(leftVal, rightVal, this.op.symbol);
         }
@@ -185,6 +200,18 @@ export class BoolLiteral {
 
     toString() {
         return this.trivia.toString() + this.literal;
+    }
+}
+
+export class FuncExpression extends Expression {
+    constructor(readonly fnKeyword: Keyword, readonly id: Identifier, readonly arrow: Symbol, readonly exp: Expression) { super(); }
+
+    eval(env: DynamicEnvironment) {
+        return new FuncValue(this.id.identifier, this.exp, env);
+    }
+
+    toString() {
+        return `${this.fnKeyword}${this.id}${this.arrow}${this.exp}`;
     }
 }
 
@@ -249,5 +276,27 @@ export class LetExpression extends Expression {
 
     toString() {
         return this.decls.reduce((acc, d) => acc + d.toString(), "") + this.inKeyword.toString() + this.exp.toString();
+    }
+}
+
+export class CallExpression extends Expression {
+    constructor(readonly fnExp: Expression, readonly argExp: Expression) { super(); }
+
+    eval(env: DynamicEnvironment) {
+        const fnVal = this.fnExp.eval(env);
+        if (fnVal.kind !== "func") {
+            return unexpectedType(fnVal, "func");
+        }
+
+        const argVal = this.argExp.eval(env);
+        const fnEnv = new DynamicEnvironment({
+            key: fnVal.arg,
+            value: argVal,
+        }, new DynamicEnvironment({
+            key: "self",
+            value: fnVal,
+        }, fnVal.env));
+
+        return fnVal.exp.eval(fnEnv);
     }
 }

@@ -1,10 +1,18 @@
 import { Parser, Input, Success, Fail } from "./Core";
 import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
-import { ParserBuilder, Constructor, builder } from "./ParserBuilder";
+import { ParserBuilder, Constructor, builder, either as eitherGeneric } from "./ParserBuilder";
 
 export type StringComparisonOptions = undefined | {
     readonly caseInsensitive?: boolean;
 };
+
+export function either<TO>(parser: Parser<string, TO>) {
+    return eitherGeneric<string, TO>(parser);
+}
+
+export function charset(cs: string): StringParserBuilder {
+    return  new StringParserBuilderImp(new CharSetParser(cs));
+}
 
 export function prefix(str: string, opts: StringComparisonOptions = undefined): Parser<string, string> {
     return new PrefixParser(str, opts);
@@ -68,6 +76,20 @@ class PrefixParser implements Parser<string, string> {
         return this.opts && this.opts.caseInsensitive ?
         stream.substr(0, this.prefix.length)
         : this.prefix;
+    }
+}
+
+class CharSetParser implements Parser<string, string> {
+    readonly regex: RegExp;
+    constructor(readonly charset: string) {
+        // TODO: check that valid charset
+        this.regex = new RegExp(`^[${charset}]`);
+    }
+
+    parse(input: Input<string>) {
+        return this.regex.test(input.stream) ?
+            new Success(input.stream[0], stringInput(input.stream.substr(1)), 1)
+            : new Fail(1);
     }
 }
 

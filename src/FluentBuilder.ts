@@ -5,12 +5,12 @@ export { Parser } from "./Core";
 
 export {
     startsWith, builder,
-    either,
     atLeastOne, anyNumberOf, maybe, iff, iffNot,
     ParserBuilder,
 } from "./ParserBuilder";
 
 export {
+    charset, either,
     str, stringInput, notStr, anyChar,
     plus, star, question,
     StringParserBuilder,
