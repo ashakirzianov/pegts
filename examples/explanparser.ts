@@ -65,15 +65,23 @@ const recExp = recursive<explan.Expression>();
 const expression = builder<string, explan.Expression>(recExp);
 
 const literalExpression = literal.produce(explan.LiteralExpression);
-const funcExpression = fnKeyword
+const namedFuncExpression = fnKeyword
+    .followedBy(id)
     .followedBy(id)
     .followedBy(fnArrow)
     .followedBy(expression)
-    .produce(explan.FuncExpression);
+    .produce(explan.NamedFuncExpression);
+const anonymousFuncExpression = id
+    .followedBy(fnArrow)
+    .followedBy(expression)
+    .produce(explan.AnonymousFuncExpression);
 const identifierExpression = iffNot(keyword.parser).then(startsWith(id.parser).produce(explan.IdentifierExpression));
 // const identifierExpression = startsWith(id.parser).produce(IdentifierExpression);
 
-const atomExpression = either<explan.Expression>(literalExpression).or(funcExpression).or(identifierExpression);
+const atomExpression = either<explan.Expression>(literalExpression)
+    .or(namedFuncExpression)
+    .or(anonymousFuncExpression)
+    .or(identifierExpression);
 
 // const callExpression = either<Expression>(atomExpression.followedBy(expression).produce(CallExpression)).or(atomExpression);
 const callExpression = either<explan.Expression>(identifierExpression.followedBy(expression).produce(explan.CallExpression)).or(atomExpression);

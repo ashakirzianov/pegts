@@ -73,15 +73,35 @@ export class ParenthesisExpression extends Expression {
     }
 }
 
-export class FuncExpression extends Expression {
-    constructor(readonly fnKeyword: Keyword, readonly id: Identifier, readonly arrow: Symbol, readonly exp: Expression) { super(); }
+export class AnonymousFuncExpression extends Expression {
+    constructor(
+        readonly arg: Identifier,
+        readonly arrow: Symbol,
+        readonly exp: Expression) { super(); }
 
     eval(env: DynamicEnvironment) {
-        return new FuncValue(this.id.identifier, this.exp, env);
+        return new FuncValue(this.arg.identifier, this.exp, env);
     }
 
     toString() {
-        return `${this.fnKeyword}${this.id}${this.arrow}${this.exp}`;
+        return `${this.arg}${this.arrow}${this.exp}`;
+    }
+}
+
+export class NamedFuncExpression extends Expression {
+    constructor(
+        readonly fnKeyword: Keyword,
+        readonly name: Identifier,
+        readonly arg: Identifier,
+        readonly arrow: Symbol,
+        readonly exp: Expression) { super(); }
+
+    eval(env: DynamicEnvironment) {
+        return new FuncValue(this.arg.identifier, this.exp, env, this.name.identifier);
+    }
+
+    toString() {
+        return `${this.fnKeyword}${this.name}${this.arg}${this.arrow}${this.exp}`;
     }
 }
 
@@ -162,8 +182,8 @@ export class CallExpression extends Expression {
         const fnEnv = new DynamicEnvironment({
             key: fnVal.arg,
             value: argVal,
-        }, new DynamicEnvironment({
-            key: "self",
+        }, !fnVal.name ? fnVal.env : new DynamicEnvironment({
+            key: fnVal.name,
             value: fnVal,
         }, fnVal.env));
 

@@ -6,7 +6,7 @@ type ValueKind = "num" | "bool" | "string" | "func";
 
 export class FuncValue {
     readonly kind: "func" = "func";
-    constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment) {}
+    constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment, readonly name?: string) {}
 
     toString() {
         return `F(${this.arg} => ${this.exp})`;
