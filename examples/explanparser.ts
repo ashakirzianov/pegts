@@ -33,6 +33,7 @@ const ifKeyword = parseKeyword("if");
 const thenKeyword = parseKeyword("then");
 const elseKeyword = parseKeyword("else");
 const letKeyword = parseKeyword("let");
+const letfunKeyword = parseKeyword("letfun");
 const inKeyword = parseKeyword("in");
 const fnKeyword = parseKeyword("fn");
 
@@ -99,7 +100,18 @@ const ifExpression = ifKeyword
     .followedBy(expression)
     .produce(explan.IfExpression);
 
-const declaration = letKeyword.followedBy(id).followedBy(eqSym).followedBy(expression).produce(explan.LetDeclaration);
+const valDeclaration = letKeyword
+    .followedBy(id)
+    .followedBy(eqSym)
+    .followedBy(expression)
+    .produce(explan.LetValDeclaration);
+const funDeclaration = letfunKeyword
+    .followedBy(id)
+    .followedBy(id)
+    .followedBy(eqSym)
+    .followedBy(expression)
+    .produce(explan.LetFuncDeclaration);
+const declaration = either<explan.LetDeclaration>(valDeclaration).or(funDeclaration);
 const letExpression = declaration.atLeastOne()
     .followedBy(inKeyword)
     .followedBy(expression)

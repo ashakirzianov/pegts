@@ -140,11 +140,10 @@ export class IfExpression extends Expression {
             + this.thenExpression.toString() + this.elseKeyword.toString() + this.elseExpression.toString();
     }
 }
-
-export class LetDeclaration {
+export type LetDeclaration = LetValDeclaration | LetFuncDeclaration;
+export class LetValDeclaration {
     constructor (readonly letKeyword: Keyword, readonly id: Identifier, readonly eqSign: Symbol, readonly exp: Expression) {}
 
-    // TODO: implement letrec
     extend(env: DynamicEnvironment) {
         return new DynamicEnvironment({
             key: this.id.identifier,
@@ -154,6 +153,26 @@ export class LetDeclaration {
 
     toString() {
         return this.letKeyword.toString() + this.id.toString() + this.eqSign.toString() + this.exp.toString();
+    }
+}
+
+export class LetFuncDeclaration {
+    constructor (
+        readonly letfunKeyword: Keyword,
+        readonly id: Identifier,
+        readonly arg: Identifier,
+        readonly eqSign: Symbol,
+        readonly exp: Expression) {}
+
+    extend(env: DynamicEnvironment) {
+        return new DynamicEnvironment({
+            key: this.id.identifier,
+            value: new FuncValue(this.arg.identifier, this.exp, env, this.id.identifier),
+        }, env);
+    }
+
+    toString() {
+        return `${this.letfunKeyword}${this.id}${this.arg}${this.eqSign}${this.exp}`;
     }
 }
 
@@ -188,5 +207,9 @@ export class CallExpression extends Expression {
         }, fnVal.env));
 
         return fnVal.exp.eval(fnEnv);
+    }
+
+    toString() {
+        return `${this.fnExp.toString()}${this.argExp.toString()}`;
     }
 }

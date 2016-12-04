@@ -4,7 +4,12 @@ Short list
     * tuples
     * constructors
     * pattern matching
-    * letrec
+- Integrations tests:
+    * install mocha/chai
+    * config test run
+    * extract source code to the separate file
+    * test expected result
+    * test toString returns original source
     
 Long list
 ===============
