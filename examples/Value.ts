@@ -1,8 +1,8 @@
 import { Expression } from "./Expression";
 // declare class Expression {};
 
-export type Value = NumValue | BoolValue | StringValue | FuncValue | ErrorValue;
-type ValueKind = "num" | "bool" | "string" | "func";
+export type Value = NumValue | BoolValue | StringValue | FuncValue | RecordValue | ErrorValue;
+type ValueKind = "num" | "bool" | "string" | "func" | "rec";
 
 export class FuncValue {
     readonly kind: "func" = "func";
@@ -38,6 +38,21 @@ export class StringValue {
 
     toString() {
         return `String(${this.value})`;
+    }
+}
+
+export type RecordInterface = { [index: string]: Value } | { [index: number]: Value };
+
+export class RecordValue {
+    readonly kind: "rec" = "rec";
+    constructor(readonly value: RecordInterface, readonly name?: string) {}
+
+    keyValues(): Array<{key: string, value: Value }> {
+        return Object.keys(this.value).map(k => { return { key: k, value: this.value[k] }; });
+    }
+
+    toString() {
+        return this.name ? `${this.name}{${this.keyValues()}}` : `{${this.keyValues()}}`;
     }
 }
 

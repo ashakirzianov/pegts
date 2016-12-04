@@ -27,7 +27,7 @@ export class StringLiteral {
 export class BoolLiteral {
     constructor(readonly trivia: Trivia, readonly literal: string) {}
     value() {
-        return new BoolValue(!!this.literal);
+        return new BoolValue(this.literal === "true");
     }
 
     toString() {

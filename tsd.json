@@ -6,16 +6,19 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "assertion-error/assertion-error.d.ts": {
-      "commit": "a84e3f1af08e57bd3911c3cb6d13df89400def3d"
+      "commit": "87b80408d2f0c3238727f75af67cb4ed54912185"
     },
     "chai/chai.d.ts": {
-      "commit": "a84e3f1af08e57bd3911c3cb6d13df89400def3d"
+      "commit": "87b80408d2f0c3238727f75af67cb4ed54912185"
     },
     "node/node.d.ts": {
       "commit": "a84e3f1af08e57bd3911c3cb6d13df89400def3d"
     },
     "mocha/mocha.d.ts": {
       "commit": "a84e3f1af08e57bd3911c3cb6d13df89400def3d"
+    },
+    "chai-subset/chai-subset.d.ts": {
+      "commit": "87b80408d2f0c3238727f75af67cb4ed54912185"
     }
   }
 }

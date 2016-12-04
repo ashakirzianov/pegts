@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import * as pre from "./Predefined";
-import expectParser from "./TestHelpers";
+import parse from "./TestHelpers";
 
 describe("Predefined", () => {
     it("whitespace", () => {
-        expectParser(pre.whiteSpace).against("\n").toMatch();
-        expectParser(pre.whiteSpace).against("\r").toMatch();
-        expectParser(pre.whiteSpace).against("\t").toMatch();
+        parse(pre.whiteSpace).against("\n").shouldMatch();
+        parse(pre.whiteSpace).against("\r").shouldMatch();
+        parse(pre.whiteSpace).against("\t").shouldMatch();
     });
 });

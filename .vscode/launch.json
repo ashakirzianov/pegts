@@ -7,15 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceRoot}/app.ts",
-            "cwd": "${workspaceRoot}",
-            "outFiles": [ "${workspaceRoot}/dist/**/*.js" ],
-            "sourceMaps": true
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Launch Tests",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "stopOnEntry": false,
@@ -32,6 +23,15 @@
             //"console": "internalConsole",
             "sourceMaps": true,
             "outFiles": [ "${workspaceRoot}/dist/**/*.js" ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceRoot}/app.ts",
+            "cwd": "${workspaceRoot}",
+            "outFiles": [ "${workspaceRoot}/dist/**/*.js" ],
+            "sourceMaps": true
         },
         {
             "type": "node",

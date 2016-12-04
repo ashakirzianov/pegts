@@ -17,7 +17,7 @@ export function pegPairRight<TOL, TOR>(pair: Pair<TOL, TOR>): TOR {
 }
 
 export function flatPegPair(pairOrAny: any): any[] { // TODO: potential problems with name collisions
-    return pairOrAny && pairOrAny.pegLeft && pairOrAny.pegRight ?
+    return pairOrAny && (pairOrAny.pegLeft || pairOrAny.pegRight) ?
         flatPegPair(pairOrAny.pegLeft).concat(flatPegPair(pairOrAny.pegRight))
         : [pairOrAny];
 }

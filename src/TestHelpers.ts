@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Parser } from "../src/Core";
 import { stringInput } from "../src/StringBuilder";
 
-export default function expectParser<T>(parser: Parser<string, T>) {
+export default function parse<T>(parser: Parser<string, T>) {
     return new ExpectParser(parser);
 }
 
@@ -24,13 +24,47 @@ export class ExpectParser<T> {
 }
 
 export class Expectations<T> {
+    readonly expect = this;
+
     constructor(readonly parser: Parser<string, T>, readonly input: string) {}
 
-    toMatch() {
-        expect(match(this.parser, this.input), this.input).to.not.be.undefined;
+    shouldMatch() {
+        this.expectMatch().to.not.be.undefined;
     }
 
-    toProduce<T>(value: T) {
-        expect(match(this.parser, this.input), this.input).to.be.deep.equal(value);
+    shouldFail() {
+        this.expectMatch().to.be.undefined;
+    }
+
+    shouldMatchString(str: string) {
+        expect((match(this.parser, this.input) || "").toString(), this.input).to.equal(str);
+    }
+
+    shouldBeReversible() {
+        this.shouldMatchString(this.input);
+    }
+
+    shouldProduce(value: T) {
+        this.expectMatch().to.be.deep.equal(value);
+    }
+
+    should(f: (v: T) => boolean) {
+        expect(f(this.matchOrThrow()), this.input).to.be.true;
+    }
+
+    result() {
+        return this.matchOrThrow();
+    }
+
+    private matchOrThrow() {
+        return this.tryMatch() || ThrowError("Unexpected undefined");
+    }
+
+    private tryMatch() {
+        return match(this.parser, this.input);
+    }
+
+    private expectMatch() {
+        return  expect(this.tryMatch(), this.input);
     }
 }

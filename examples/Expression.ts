@@ -1,12 +1,20 @@
 import { Symbol, Keyword, Identifier, Trivia } from "./Core";
 import {
     DynamicEnvironment,
-    Value, FuncValue, NumValue, BoolValue, ErrorValue, StringValue,
+    Value, FuncValue, NumValue, BoolValue, ErrorValue, StringValue, RecordValue,
     unknownIdentifier, typeMismatch, unexpectedType, operatorMismatch, // TODO: consider move to the Expression.ts
 } from "./Value";
 import { Literal } from "./Literal";
 
 export abstract class Expression {
+    as<T extends Expression>(): T {
+        return this as any as T;
+    }
+
+    rootEval(): Value {
+        return this.eval(new DynamicEnvironment());
+    }
+
     abstract eval(env: DynamicEnvironment): Value;
 }
 
@@ -61,15 +69,37 @@ export class BinaryExpression extends Expression {
     }
 }
 
-export class ParenthesisExpression extends Expression {
-    constructor(readonly lp: Symbol, readonly exp: Expression, readonly rp: Symbol) { super(); }
+export class CommaExpression {
+    constructor(readonly comma: Symbol, readonly exp: Expression) {}
+
+    toString() {
+        return `${this.comma}${this.exp}`;
+    }
+}
+
+export class ExpressionList {
+    constructor(readonly head: Expression, readonly tail: CommaExpression[], readonly comma?: Symbol) {}
+
+    toString() {
+        const list = this.tail.reduce((l, ce) => `${l}${ce.comma}${ce.exp}`, this.head.toString());
+        return this.comma ? list + this.comma.toString() : list;
+    }
+}
+
+export class TupleExpression extends Expression {
+    constructor(readonly lp: Symbol, readonly exps: ExpressionList, readonly rp: Symbol) { super(); }
 
     eval(env: DynamicEnvironment) {
-        return this.exp.eval(env);
+        const head = this.exps.head.eval(env);
+        const tail = this.exps.tail.reduce((arr, e) => {
+            arr.push(e.exp.eval(env));
+            return arr;
+        }, [head]);
+        return tail.length > 1 ? new RecordValue(tail) : head;
     }
 
     toString() {
-        return this.lp.toString() + this.exp.toString() + this.rp.toString();
+        return this.lp.toString() + this.exps.toString() + this.rp.toString();
     }
 }
 

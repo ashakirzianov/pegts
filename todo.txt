@@ -1,16 +1,20 @@
 Short list
 ===============
+- Operators:
+    * union type for choice operator
+- ParserChainBuilder:
+    * produceArray
 - Explan:
-    * tuples
     * constructors
     * pattern matching
-    * function call with colon (fact: 5)
     * do statement expression
     * self or this keyword in let expression
     * allow different parenthesis
     * module system:
         # from expression
         # extract expression
+    * trailing trivia
+    * type system
     
 Long list
 ===============
