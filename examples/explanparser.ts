@@ -1,10 +1,11 @@
 import { Parser } from "../src/Core";
-import {
-    Trivia, Symbol, Keyword,
-    Expression, BinaryExpression, LiteralExpression, IfExpression, LetExpression, IdentifierExpression, ParenthesisExpression,
-    FuncExpression, CallExpression,
-    LetDeclaration, NumLiteral, BoolLiteral, StringLiteral, Identifier,
-} from "./explan";
+// import {
+//     Trivia, Symbol, Keyword,
+//     Expression, BinaryExpression, LiteralExpression, IfExpression, LetExpression, IdentifierExpression, ParenthesisExpression,
+//     FuncExpression, CallExpression,
+//     LetDeclaration, NumLiteral, BoolLiteral, StringLiteral, Identifier,
+// } from "./explan";
+import * as explan from "./explan";
 import {
     atLeastOne, anyNumberOf,
     startsWith, either, builder,
@@ -23,10 +24,10 @@ const eq = str("==").parser;
 const lessThan = str("<=").parser;
 const grThan = str("=>").parser;
 
-const trivia = pre.trivia.produce(Trivia);
+const trivia = pre.trivia.produce(explan.Trivia);
 
 function parseKeyword(word: string) {
-    return trivia.followedBy(str(word)).produce(Keyword);
+    return trivia.followedBy(str(word)).produce(explan.Keyword);
 }
 const ifKeyword = parseKeyword("if");
 const thenKeyword = parseKeyword("then");
@@ -43,7 +44,7 @@ const keyword = ifKeyword
     .or(fnKeyword);
 
 function parseSymbol(sym: string) {
-    return trivia.followedBy(str(sym)).produce(Symbol);
+    return trivia.followedBy(str(sym)).produce(explan.Symbol);
 }
 
 const eqSym = parseSymbol("=");
@@ -51,35 +52,35 @@ const openOval = parseSymbol("(");
 const closeOval = parseSymbol(")");
 const fnArrow = parseSymbol("=>");
 
-const numLiteral = trivia.followedBy(pre.float).produce(NumLiteral);
+const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
 const literal = numLiteral;
-const id = trivia.followedBy(pre.identifier).produce(Identifier);
+const id = trivia.followedBy(pre.identifier).produce(explan.Identifier);
 
-const boolPrescOperator = trivia.followedBy(eq).produce(Symbol);
-const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(Symbol);
-const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(Symbol);
-const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(Symbol);
+const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
+const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
+const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(explan.Symbol);
+const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(explan.Symbol);
 
-const recExp = recursive<Expression>();
-const expression = builder<string, Expression>(recExp);
+const recExp = recursive<explan.Expression>();
+const expression = builder<string, explan.Expression>(recExp);
 
-const literalExpression = literal.produce(LiteralExpression);
+const literalExpression = literal.produce(explan.LiteralExpression);
 const funcExpression = fnKeyword
     .followedBy(id)
     .followedBy(fnArrow)
     .followedBy(expression)
-    .produce(FuncExpression);
-const identifierExpression = iffNot(keyword.parser).then(startsWith(id.parser).produce(IdentifierExpression));
+    .produce(explan.FuncExpression);
+const identifierExpression = iffNot(keyword.parser).then(startsWith(id.parser).produce(explan.IdentifierExpression));
 // const identifierExpression = startsWith(id.parser).produce(IdentifierExpression);
 
-const atomExpression = either<Expression>(literalExpression).or(funcExpression).or(identifierExpression);
+const atomExpression = either<explan.Expression>(literalExpression).or(funcExpression).or(identifierExpression);
 
 // const callExpression = either<Expression>(atomExpression.followedBy(expression).produce(CallExpression)).or(atomExpression);
-const callExpression = either<Expression>(identifierExpression.followedBy(expression).produce(CallExpression)).or(atomExpression);
-const multExpression = pre.binary(callExpression, multPrescOperator, BinaryExpression);
-const addExpression = pre.binary(multExpression, addPrescOperator, BinaryExpression);
-const compExpression = pre.binary(addExpression, compPrescOperator, BinaryExpression);
-const boolExpression = pre.binary(compExpression, boolPrescOperator, BinaryExpression);
+const callExpression = either<explan.Expression>(identifierExpression.followedBy(expression).produce(explan.CallExpression)).or(atomExpression);
+const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
+const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);
+const compExpression = pre.binary(addExpression, compPrescOperator, explan.BinaryExpression);
+const boolExpression = pre.binary(compExpression, boolPrescOperator, explan.BinaryExpression);
 const arithmeticExpression = boolExpression;
 
 const ifExpression = ifKeyword
@@ -88,25 +89,25 @@ const ifExpression = ifKeyword
     .followedBy(expression)
     .followedBy(elseKeyword)
     .followedBy(expression)
-    .produce(IfExpression);
+    .produce(explan.IfExpression);
 
-const declaration = letKeyword.followedBy(id).followedBy(eqSym).followedBy(expression).produce(LetDeclaration);
+const declaration = letKeyword.followedBy(id).followedBy(eqSym).followedBy(expression).produce(explan.LetDeclaration);
 const letExpression = declaration.atLeastOne()
     .followedBy(inKeyword)
     .followedBy(expression)
-    .produce(LetExpression);
+    .produce(explan.LetExpression);
 
-const parenthesisExpression = openOval.followedBy(expression).followedBy(closeOval).produce(ParenthesisExpression);
-const actualExpression = either<Expression>(ifExpression)
+const parenthesisExpression = openOval.followedBy(expression).followedBy(closeOval).produce(explan.ParenthesisExpression);
+const actualExpression = either<explan.Expression>(ifExpression)
     .or(letExpression)
     .or(parenthesisExpression)
     .or(arithmeticExpression);
 
 recExp.set(actualExpression);
 
-const te = recursive<Expression>();
-const tCall = builder<string, Expression>(identifierExpression).followedBy(te).produce(CallExpression);
-te.set(either<Expression>(tCall).or(identifierExpression));
+const te = recursive<explan.Expression>();
+const tCall = builder<string, explan.Expression>(identifierExpression).followedBy(te).produce(explan.CallExpression);
+te.set(either<explan.Expression>(tCall).or(identifierExpression));
 
 export const parser = expression;
 // export const parser = iffNot<string>(str("foo")).then(id);
