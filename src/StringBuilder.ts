@@ -18,6 +18,10 @@ export function prefix(str: string, opts: StringComparisonOptions = undefined): 
     return new PrefixParser(str, opts);
 }
 
+export function reg(regexp: RegExp, lookAhead: number = 1) {
+    return new StringParserBuilderImp(new RegexpParser(regexp, lookAhead));
+}
+
 export function anyChar(): StringParserBuilder {
     return new StringParserBuilderImp(new AnyCharParser());
 }
@@ -48,6 +52,21 @@ export function stringInput(str: string): Input<string> {
 
 class StringInput implements Input<string> {
     constructor(readonly stream: string) {}
+
+    bite(n: number) {
+        return new StringInput(this.stream.substr(n));
+    }
+}
+
+class RegexpParser implements Parser<string, string> {
+    constructor(readonly regexp: RegExp, readonly lookAhead?: number) {}
+
+    parse(input: Input<string>) {
+        const match = input.stream.match(this.regexp);
+        return match ?
+            new Success(match[0], input.bite(match[0].length), match[0].length + 1) // TODO: weak
+            : new Fail(this.lookAhead || 0); // TODO: even weaker
+    }
 }
 
 class PrefixParser implements Parser<string, string> {
@@ -58,7 +77,7 @@ class PrefixParser implements Parser<string, string> {
 
     parse(input: Input<string>) {
         return this.compare(input.stream) ?
-            new Success(this.match(input.stream), stringInput(input.stream.substr(this.prefix.length)), this.prefix.length)
+            new Success(this.match(input.stream), input.bite(this.prefix.length), this.prefix.length)
             : new Fail(this.prefix.length);
     }
 
@@ -88,7 +107,7 @@ class CharSetParser implements Parser<string, string> {
 
     parse(input: Input<string>) {
         return this.regex.test(input.stream) ?
-            new Success(input.stream[0], stringInput(input.stream.substr(1)), 1)
+            new Success(input.stream[0], input.bite(1), 1)
             : new Fail(1);
     }
 }
@@ -100,7 +119,7 @@ class NotPrefixParser implements Parser<string, string> {
         const r = this.prefixParser.parse(input);
         return r.success ?
             new Fail(r.lookAhead)
-            : new Success(input.stream.substr(0, r.lookAhead), stringInput(input.stream.substr(r.lookAhead)), r.lookAhead);
+            : new Success(input.stream.substr(0, r.lookAhead), input.bite(r.lookAhead), r.lookAhead);
     }
 
     toString() {
@@ -111,7 +130,7 @@ class NotPrefixParser implements Parser<string, string> {
 class AnyCharParser implements Parser<string, string> {
     parse(input: Input<string>) {
         return input.stream.length > 0 ?
-            new Success(input.stream[0], stringInput(input.stream.substr(1)), 1)
+            new Success(input.stream[0], input.bite(1), 1)
             : new Fail(1);
     }
 

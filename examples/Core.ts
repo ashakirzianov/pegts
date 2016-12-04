@@ -21,6 +21,6 @@ export class Identifier {
     constructor (readonly trivia: Trivia, readonly identifier: string) {}
 
     toString() {
-        return this.trivia + this.identifier;
+        return this.trivia.toString() + this.identifier.toString();
     }
 }

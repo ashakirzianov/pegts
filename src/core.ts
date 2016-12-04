@@ -1,5 +1,6 @@
-export class Input<TInput> {
+export interface Input<TInput> {
     readonly stream: TInput;
+    bite(n: number): Input<TInput>;
 }
 
 export type Result<TInput, TOutput> = Success<TInput, TOutput> | Fail<TInput>;

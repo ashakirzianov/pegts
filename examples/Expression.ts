@@ -18,7 +18,7 @@ export class IdentifierExpression extends Expression {
     }
 
     toString() {
-        return this.id;
+        return this.id.toString();
     }
 }
 

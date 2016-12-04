@@ -16,6 +16,7 @@
         "interface-name": [
             false
         ],
+        "no-namespace": false,
         "max-classes-per-file": [
             false
         ]

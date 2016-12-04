@@ -4,7 +4,7 @@ import {
     Parser, ParserBuilder, StringParserBuilder,
 } from "./FluentBuilder";
 
-export const lineEnd = str("\n");
+export const lineEnd = str("\n").or("\r");
 export const space = str(" ");
 export const tab = str("\t");
 export const whiteSpace = space.or(tab).or(lineEnd);
@@ -17,7 +17,7 @@ export const trivia = whiteSpace.or(lineComment).or(multiLineComment).anyNumber(
 
 export const letter = charset("A-Za-z");
 
-export const digit = str("0").or("1").or("2").or("3").or("4").or("5").or("6").or("7").or("8").or("9");
+export const digit = charset("0-9");
 const dot = str(".");
 export const integer = digit.atLeastOne();
 export const float = integer.followedBy(dot.followedBy(integer).maybe());

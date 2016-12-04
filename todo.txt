@@ -1,7 +1,5 @@
 Short list
 ===============
-- Predefined:
-    * allow multiple lines in trivia
 - Explan:
     * tuples
     * constructors
@@ -16,7 +14,8 @@ Short list
     
 Long list
 ===============
-- Implement function form
+- Implement string input that doesn't recreate strings
+- Implement function form parsing
 - StringBuilder:
     *** reimplement based on regex
     * ignore case postfix operator
@@ -24,7 +23,6 @@ Long list
     * performance optimizations for predefined parsers (using regex)
 - Predefined:
     * exponential form number
-    * letter class
     * end of input
     * fix comments and strings using EOI
 - Tests:

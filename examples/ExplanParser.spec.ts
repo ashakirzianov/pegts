@@ -2,11 +2,19 @@ import { readFileSync } from "fs";
 import { expect } from "chai";
 
 import explanParser from "./ExplanParser";
+import { Implementation } from "./ExplanParser";
 import { evaluate } from "./Explan";
+import expectParser from "../src/TestHelpers";
 
 function ThrowError(message: string | undefined = undefined): never {
     throw new Error(message);
 }
+
+describe("Units", () => {
+    it("identifier", () => {
+        expectParser(Implementation.trivia).against("  \n\r some").toMatch();
+    });
+});
 
 describe("Integration", () => {
     describe("Sample program", () => {

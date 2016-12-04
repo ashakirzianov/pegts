@@ -11,7 +11,7 @@ export {
 
 export {
     charset, either,
-    str, stringInput, notStr, anyChar,
+    str, stringInput, notStr, anyChar, reg,
     plus, star, question,
     StringParserBuilder,
 } from "./StringBuilder";
@@ -21,7 +21,7 @@ export function recursive<TO>() {
 }
 
 export class RecursiveParser<TI, TO> implements Parser<TI, TO> {
-    private parser: Parser<TI, TO> | undefined = undefined;
+    private parser?: Parser<TI, TO> = undefined;
 
     set(parser: Parser<TI, TO>) {
         this.parser = parser;
