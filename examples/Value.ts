@@ -6,6 +6,7 @@ type ValueKind = "num" | "bool" | "string" | "func";
 
 export class FuncValue {
     readonly kind: "func" = "func";
+    readonly value: "func" = "func";
     constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment, readonly name?: string) {}
 
     toString() {
@@ -42,10 +43,10 @@ export class StringValue {
 
 export class ErrorValue {
     readonly kind: "error" = "error";
-    constructor(readonly message: string, readonly parent: Value | undefined = undefined) { }
+    constructor(readonly value: string, readonly parent: Value | undefined = undefined) { }
 
     toString() {
-        return `Error(${this.message})`;
+        return `Error(${this.value})`;
     }
 }
 

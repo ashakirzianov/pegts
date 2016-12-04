@@ -4,8 +4,9 @@
   "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
   "scripts": {
-    "full": "npm run build && npm run lint",
+    "full": "npm run build && npm run lint && npm run test",
     "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",
+    "test": "mocha ./**/*.spec.ts --require ts-node/register ",
     "build": "tsc"
   },
   "repository": {
@@ -20,6 +21,7 @@
   ],
   "devDependencies": {
     "chai": "^3.5.0",
+    "mocha": "^3.2.0",
     "ts-node": "^1.7.0",
     "tslint": "4.0.2",
     "typescript": "^2.0.6"

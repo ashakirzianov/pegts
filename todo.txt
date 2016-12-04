@@ -1,15 +1,18 @@
 Short list
 ===============
+- Predefined:
+    * allow multiple lines in trivia
 - Explan:
     * tuples
     * constructors
     * pattern matching
-- Integrations tests:
-    * install mocha/chai
-    * config test run
-    * extract source code to the separate file
-    * test expected result
-    * test toString returns original source
+    * function call with colon (fact: 5)
+    * do statement expression
+    * self of this keyword in let expression
+    * allow different parenthesis
+    * module system:
+        # from expression
+        # extract expression
     
 Long list
 ===============
