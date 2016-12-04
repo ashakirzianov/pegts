@@ -53,6 +53,7 @@ export namespace Implementation {
     const openOval = parseSymbol("(");
     const closeOval = parseSymbol(")");
     const fnArrow = parseSymbol("=>");
+    const colon = parseSymbol(":");
 
     const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
     const literal = numLiteral;
@@ -80,14 +81,14 @@ export namespace Implementation {
     const identifierExpression = iffNot(keyword.parser).then(startsWith(id.parser).produce(explan.IdentifierExpression));
     // const identifierExpression = startsWith(id.parser).produce(IdentifierExpression);
 
-    const atomExpression = either<explan.Expression>(literalExpression)
+    const callExpression = identifierExpression.followedBy(colon).followedBy(expression).produce(explan.CallExpression);
+    const atomExpression = either<explan.Expression>(callExpression)
+        .or(literalExpression)
         .or(namedFuncExpression)
         .or(anonymousFuncExpression)
         .or(identifierExpression);
 
-    // const callExpression = either<Expression>(atomExpression.followedBy(expression).produce(CallExpression)).or(atomExpression);
-    const callExpression = either<explan.Expression>(identifierExpression.followedBy(expression).produce(explan.CallExpression)).or(atomExpression);
-    const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
+    const multExpression = pre.binary(atomExpression, multPrescOperator, explan.BinaryExpression);
     const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);
     const compExpression = pre.binary(addExpression, compPrescOperator, explan.BinaryExpression);
     const boolExpression = pre.binary(compExpression, boolPrescOperator, explan.BinaryExpression);

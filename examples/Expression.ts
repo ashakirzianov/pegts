@@ -189,7 +189,7 @@ export class LetExpression extends Expression {
 }
 
 export class CallExpression extends Expression {
-    constructor(readonly fnExp: Expression, readonly argExp: Expression) { super(); }
+    constructor(readonly fnExp: Expression, readonly colon: Symbol, readonly argExp: Expression) { super(); }
 
     eval(env: DynamicEnvironment) {
         const fnVal = this.fnExp.eval(env);
@@ -210,6 +210,6 @@ export class CallExpression extends Expression {
     }
 
     toString() {
-        return `${this.fnExp.toString()}${this.argExp.toString()}`;
+        return `${this.fnExp.toString()}${this.colon}${this.argExp.toString()}`;
     }
 }
