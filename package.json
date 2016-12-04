@@ -19,8 +19,9 @@
     "typescript"
   ],
   "devDependencies": {
-    "tslint": "4.0.2",
+    "chai": "^3.5.0",
     "ts-node": "^1.7.0",
+    "tslint": "4.0.2",
     "typescript": "^2.0.6"
   },
   "author": "Anton Shakirzianov",
