@@ -81,8 +81,8 @@ describe("Units", () => {
 
         it("callExpression", () => {
             const fx = syntaxTree<explan.CallExpression>("f:x");
-            expect(fx.fnExp.as<explan.IdentifierExpression>().id.identifier).eq("f");
-            expect(fx.argExp.as<explan.IdentifierExpression>().id.identifier).eq("x");
+            expect(fx.fnExp.as<explan.ReferenceExpression>().head.identifier).eq("f");
+            expect(fx.argExp.as<explan.ReferenceExpression>().head.identifier).eq("x");
         });
 
         describe("complex", () => {

@@ -28,7 +28,8 @@ export const aString = doubleQuoteString.or(singleQuoteString);
 
 export const bool = str("true").or("false");
 
-export const identifier = letter.followedBy(letter.or(digit).anyNumber());
+export const alphanum = letter.or(digit);
+export const identifier = letter.followedBy(alphanum.anyNumber());
 
 export function quoted(quoteParser: StringParserBuilder) {
     return quoteParser.followedBy(quoteParser.not().anyNumber()).followedBy(quoteParser);

@@ -2,39 +2,46 @@ import { Expression } from "./Expression";
 // declare class Expression {};
 
 export type Value = NumValue | BoolValue | StringValue | FuncValue | RecordValue | ErrorValue;
-type ValueKind = "num" | "bool" | "string" | "func" | "rec";
+export type ValueKind = "num" | "bool" | "string" | "func" | "rec";
+export type Key = string;
 
-export class FuncValue {
+export abstract class ValueBase {
+    field(key: Key): Value {
+        return unknownIdentifier(key);
+    }
+}
+
+export class FuncValue extends ValueBase {
     readonly kind: "func" = "func";
     readonly value: "func" = "func";
-    constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment, readonly name?: string) {}
+    constructor(readonly arg: string, readonly exp: Expression, readonly env: DynamicEnvironment, readonly name?: string) { super(); }
 
     toString() {
         return `F(${this.arg} => ${this.exp})`;
     }
 }
 
-export class NumValue {
+export class NumValue extends ValueBase {
     readonly kind: "num" = "num";
-    constructor(readonly value: number) { }
+    constructor(readonly value: number) { super(); }
 
     toString() {
         return `Num(${this.value})`;
     }
 }
 
-export class BoolValue {
+export class BoolValue extends ValueBase {
     readonly kind: "bool" = "bool";
-    constructor(readonly value: boolean) { }
+    constructor(readonly value: boolean) { super(); }
 
     toString() {
         return `Bool(${this.value})`;
     }
 }
 
-export class StringValue {
+export class StringValue extends ValueBase {
     readonly kind: "string" = "string";
-    constructor(readonly value: string) { }
+    constructor(readonly value: string) { super(); }
 
     toString() {
         return `String(${this.value})`;
@@ -43,9 +50,13 @@ export class StringValue {
 
 export type RecordInterface = { [index: string]: Value } | { [index: number]: Value };
 
-export class RecordValue {
+export class RecordValue extends ValueBase {
     readonly kind: "rec" = "rec";
-    constructor(readonly value: RecordInterface, readonly name?: string) {}
+    constructor(readonly value: RecordInterface, readonly name?: string) { super(); }
+
+    field(key: Key): Value {
+        return this.value[key];
+    }
 
     keyValues(): Array<{key: string, value: Value }> {
         return Object.keys(this.value).map(k => { return { key: k, value: this.value[k] }; });
@@ -56,9 +67,9 @@ export class RecordValue {
     }
 }
 
-export class ErrorValue {
+export class ErrorValue extends ValueBase {
     readonly kind: "error" = "error";
-    constructor(readonly value: string, readonly parent: Value | undefined = undefined) { }
+    constructor(readonly value: string, readonly parent: Value | undefined = undefined) { super(); }
 
     toString() {
         return `Error(${this.value})`;

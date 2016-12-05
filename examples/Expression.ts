@@ -18,15 +18,16 @@ export abstract class Expression {
     abstract eval(env: DynamicEnvironment): Value;
 }
 
-export class IdentifierExpression extends Expression {
-    constructor (readonly id: Identifier) { super(); }
+export class ReferenceExpression extends Expression {
+    constructor (readonly head: Identifier, readonly tail: Identifier[]) { super(); }
 
     eval(env: DynamicEnvironment): Value {
-        return env.get(this.id.identifier) || unknownIdentifier(this.id.identifier);
+        const headVal = env.get(this.head.identifier) || unknownIdentifier(this.head.identifier);
+        return this.tail.reduce((v, id) => v.field(id.identifier), headVal);
     }
 
     toString() {
-        return this.id.toString();
+        return this.tail.reduce((str, id) => str + id.toString(), this.head.toString());
     }
 }
 

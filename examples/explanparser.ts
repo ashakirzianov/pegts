@@ -63,7 +63,8 @@ export namespace Implementation {
     const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral);
-    const id = trivia.followedBy(pre.identifier).produce(explan.Identifier);
+    const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
+    const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
     const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
     const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
@@ -75,17 +76,16 @@ export namespace Implementation {
 
     const literalExpression = literal.produce(explan.LiteralExpression);
     const namedFuncExpression = fnKeyword
-        .followedBy(id)
-        .followedBy(id)
+        .followedBy(topId)
+        .followedBy(topId)
         .followedBy(fnArrow)
         .followedBy(expression)
         .produce(explan.NamedFuncExpression);
-    const anonymousFuncExpression = id
+    const anonymousFuncExpression = topId
         .followedBy(fnArrow)
         .followedBy(expression)
         .produce(explan.AnonymousFuncExpression);
-    const identifierExpression = iffNot(keyword.parser).then(startsWith(id.parser).produce(explan.IdentifierExpression));
-    // const identifierExpression = startsWith(id.parser).produce(IdentifierExpression);
+    const referenceExpression = topId.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
 
     export const commaExpression = comma.followedBy(expression).produce(explan.CommaExpression);
     export const expressionList = expression
@@ -96,7 +96,7 @@ export namespace Implementation {
     const atomExpression = either<explan.Expression>(namedFuncExpression)
         .or(anonymousFuncExpression)
         .or(literalExpression)
-        .or(identifierExpression)
+        .or(referenceExpression)
         .or(tupleExpression);
 
     export const callExpression = pre.binary(atomExpression, colon, explan.CallExpression);
@@ -115,13 +115,13 @@ export namespace Implementation {
         .produce(explan.IfExpression);
 
     const valDeclaration = letKeyword
-        .followedBy(id)
+        .followedBy(topId)
         .followedBy(eqSym)
         .followedBy(expression)
         .produce(explan.LetValDeclaration);
     const funDeclaration = letfunKeyword
-        .followedBy(id)
-        .followedBy(id)
+        .followedBy(topId)
+        .followedBy(topId)
         .followedBy(eqSym)
         .followedBy(expression)
         .produce(explan.LetFuncDeclaration);
