@@ -43,6 +43,29 @@ export class ReferenceExpression extends Expression {
     }
 }
 
+export class Indexer {
+    constructor (readonly op: Symbol, readonly index: Expression, readonly cl: Symbol) {}
+
+    toString() {
+        return `${this.op}${this.index}${this.cl}`;
+    }
+}
+
+export class IndexExpression extends Expression {
+    constructor (readonly exp: Expression, readonly indexers: Indexer[]) { super(); }
+
+    eval(env: DynamicEnvironment): Value {
+        const val = this.exp.eval(env);
+        return this.indexers
+            .map(indexer => indexer.index.eval(env))
+            .reduce((v, i) => typeof (i.value) === "string" ? val.field(i.value) : unexpectedType(i, "string"), val);
+    }
+
+    toString() {
+        return `${this.exp}${this.indexers.reduce((s, i) => s + i.toString(), "")}`;
+    }
+}
+
 export class BinaryExpression extends Expression {
     constructor(readonly left: Expression, readonly op: Symbol, readonly right: Expression) { super(); }
 

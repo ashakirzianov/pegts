@@ -56,6 +56,8 @@ export namespace Implementation {
     const eqSym = parseSymbol("=");
     const openOval = parseSymbol("(");
     const closeOval = parseSymbol(")");
+    const openSq = parseSymbol("[");
+    const closeSq = parseSymbol("[");
     const fnArrow = parseSymbol("=>");
     const colon = parseSymbol(":");
     const comma = parseSymbol(",");
@@ -100,7 +102,9 @@ export namespace Implementation {
         .or(tupleExpression);
 
     export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
-    export const callExpression = pre.binary(referenceExpression, colon, explan.CallExpression);
+    export const indexer = openSq.followedBy(expression).followedBy(closeSq).produce(explan.Indexer);
+    export const indexExpression = referenceExpression.followedBy(indexer.anyNumber()).produce(explan.IndexExpression);
+    export const callExpression = pre.binary(indexExpression, colon, explan.CallExpression);
     const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
     const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);
     const compExpression = pre.binary(addExpression, compPrescOperator, explan.BinaryExpression);
