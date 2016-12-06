@@ -100,7 +100,7 @@ export namespace Implementation {
         .or(tupleExpression);
 
     export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
-    export const callExpression = pre.binary(atomExpression, colon, explan.CallExpression);
+    export const callExpression = pre.binary(referenceExpression, colon, explan.CallExpression);
     const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
     const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);
     const compExpression = pre.binary(addExpression, compPrescOperator, explan.BinaryExpression);

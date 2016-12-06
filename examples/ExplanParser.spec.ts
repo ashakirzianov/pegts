@@ -108,8 +108,8 @@ describe("Units", () => {
 
         it("callExpression", () => {
             const fx = syntaxTree<explan.CallExpression>("f:x");
-            expect(fx.fnExp.as<explan.IdentifierExpression>().id.identifier).eq("f");
-            expect(fx.argExp.as<explan.IdentifierExpression>().id.identifier).eq("x");
+            expect(fx.fnExp.as<explan.ReferenceExpression>().head.as<explan.IdentifierExpression>().id.identifier).eq("f");
+            expect(fx.argExp.as<explan.ReferenceExpression>().head.as<explan.IdentifierExpression>().id.identifier).eq("x");
         });
 
         it("referenceExpression", () => {
@@ -127,7 +127,7 @@ describe("Units", () => {
     });
 });
 
-describe.skip("Integration", () => {
+describe("Integration", () => {
     describe("Sample program", () => {
 
         function read() {
