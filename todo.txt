@@ -18,6 +18,9 @@ Short list
         # extract expression
     * trailing trivia
     * type system
+    * string interpolation
+    * toString conversion for values
+    * consider 1-based tuples index
     
 Long list
 ===============

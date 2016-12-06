@@ -31,15 +31,15 @@ export class IdentifierExpression extends Expression {
 }
 
 export class ReferenceExpression extends Expression {
-    constructor (readonly head: Expression, readonly tail: Identifier[]) { super(); }
+    constructor (readonly exp: Expression, readonly fieldId: Identifier) { super(); }
 
     eval(env: DynamicEnvironment): Value {
-        const headVal = this.head.eval(env);
-        return this.tail.reduce((v, id) => v.field(id.identifier), headVal);
+        const headVal = this.exp.eval(env);
+        return headVal.field(this.fieldId.identifier);
     }
 
     toString() {
-        return this.tail.reduce((str, id) => str + id.toString(), this.head.toString());
+        return `${this.exp}${this.fieldId}`;
     }
 }
 

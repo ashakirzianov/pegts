@@ -120,12 +120,13 @@ describe("Units", () => {
 
         it("callExpression", () => {
             const fx = syntaxTree<explan.CallExpression>("f:x");
-            expect(fx.fnExp.as<explan.ReferenceExpression>().head.as<explan.IdentifierExpression>().id.identifier).eq("f");
-            expect(fx.argExp.as<explan.ReferenceExpression>().head.as<explan.IdentifierExpression>().id.identifier).eq("x");
+            expect(fx.fnExp.as<explan.IdentifierExpression>().id.identifier).eq("f");
+            expect(fx.argExp.as<explan.IdentifierExpression>().id.identifier).eq("x");
         });
 
         it("referenceExpression", () => {
             expectEval<number>("(13, 42) 1").to.be.eq(42);
+            expectEval<number>("(13, (1, (2, 3))) 1 1 0").to.be.eq(2);
         });
 
         it("indexExpression", () => {

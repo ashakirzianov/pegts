@@ -102,7 +102,8 @@ export namespace Implementation {
         .or(identifierExpression)
         .or(tupleExpression);
 
-    export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
+    // export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
+    export const referenceExpression = pre.postfix(atomExpression, fieldId, explan.ReferenceExpression);
     export const indexer = openSq.followedBy(expression).followedBy(closeSq).produce(explan.Indexer);
     export const indexExpression = pre.postfix(referenceExpression, indexer, explan.IndexExpression);
     export const callExpression = pre.binary(indexExpression, colon, explan.CallExpression);
