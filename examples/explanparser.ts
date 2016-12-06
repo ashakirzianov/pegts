@@ -57,14 +57,15 @@ export namespace Implementation {
     const openOval = parseSymbol("(");
     const closeOval = parseSymbol(")");
     const openSq = parseSymbol("[");
-    const closeSq = parseSymbol("[");
+    const closeSq = parseSymbol("]");
     const fnArrow = parseSymbol("=>");
     const colon = parseSymbol(":");
     const comma = parseSymbol(",");
 
     const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
-    const literal = either<explan.Literal>(numLiteral).or(boolLiteral);
+    const stringLiteral = trivia.followedBy(pre.aString).produce(explan.StringLiteral);
+    const literal = either<explan.Literal>(numLiteral).or(boolLiteral).or(stringLiteral);
     export const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
     export const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
@@ -103,7 +104,7 @@ export namespace Implementation {
 
     export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
     export const indexer = openSq.followedBy(expression).followedBy(closeSq).produce(explan.Indexer);
-    export const indexExpression = referenceExpression.followedBy(indexer.anyNumber()).produce(explan.IndexExpression);
+    export const indexExpression = pre.postfix(referenceExpression, indexer, explan.IndexExpression);
     export const callExpression = pre.binary(indexExpression, colon, explan.CallExpression);
     const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
     const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);

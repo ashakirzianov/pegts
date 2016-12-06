@@ -3,7 +3,7 @@ import { Expression } from "./Expression";
 
 export type Value = NumValue | BoolValue | StringValue | FuncValue | RecordValue | ErrorValue;
 export type ValueKind = "num" | "bool" | "string" | "func" | "rec";
-export type Key = string;
+export type Key = string | number;
 
 export abstract class ValueBase {
     field(key: Key): Value {
@@ -88,7 +88,7 @@ export function operatorMismatch(left: Value, right: Value, op: string) {
     return new ErrorValue(`Operator: ${op} can not be applied to ${left} and ${right}`);
 }
 
-export function unknownIdentifier(id: string) {
+export function unknownIdentifier(id: Key) {
     return new ErrorValue(`Unknown identifier: ${id}`);
 }
 

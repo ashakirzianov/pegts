@@ -16,11 +16,17 @@ export class NumLiteral {
 export class StringLiteral {
     constructor(readonly trivia: Trivia, readonly literal: string) {}
     value() {
-        return new StringValue(this.literal);
+        return new StringValue(this.unqoute(this.literal));
     }
 
     toString() {
         return this.trivia.toString() + this.literal;
+    }
+
+    private unqoute(str: string) {
+        return str[0] === "'" ?
+            (str[str.length-1] === "'" ? str.slice(1, str.length - 1) : str)
+            : (str[0] === '"' ? str.slice(1, str.length - 1) : str);
     }
 }
 

@@ -46,3 +46,11 @@ export function binary<TExp, TOp>(
             .followedBy(opParser.followedBy(expParser).adopt((o, e) => { return { op: o, exp: e }; }).anyNumber())
             .adopt((init, rest) => rest.reduce((acc, pair) => new con(acc, pair.op, pair.exp), init));
 }
+
+export interface PostConstructor<TExp, TPost> {
+    new (e: TExp, p: TPost): TExp;
+}
+
+export function postfix<TExp, TPost>(exp: ParserBuilder<string, TExp>, post: ParserBuilder<string, TPost>, con: PostConstructor<TExp, TPost>) {
+    return exp.followedBy(post.anyNumber()).adopt((head, tail) => tail.reduce((e, p) => new con(e, p), head));
+}

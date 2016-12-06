@@ -35,8 +35,14 @@ export class Expectations<T> {
         this.expectMatch().to.be.undefined;
     }
 
-    shouldMatchString(str: string) {
-        expect((match(this.parser, this.input) || "").toString(), this.input).to.equal(str);
+    shouldMatchString(str: string, nextStream?: string) {
+        const result = this.parser.parse(stringInput(this.input));
+        expect(result.success).to.be.true;
+        const suc = result.success ? result : ThrowError("Unexpected undefined");
+        expect(suc.value.toString()).to.be.eq(str);
+        if (nextStream) {
+            expect(suc.next.stream).to.be.eq(nextStream);
+        }
     }
 
     shouldBeReversible() {
@@ -55,11 +61,10 @@ export class Expectations<T> {
         return this.matchOrThrow();
     }
 
-    shouldPassTheStream(nextStream: string) {
+    remainingStream() {
         const result = this.parser.parse(stringInput(this.input));
         expect(result.success).to.be.true;
-        const next = result.success ? result.next : ThrowError("Unexpected undefined");
-        expect(next.stream).to.be.eq(nextStream);
+        return result.success ? result.next.stream : ThrowError("Unexpected undefined");
     }
 
     private matchOrThrow() {

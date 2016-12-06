@@ -52,17 +52,16 @@ export class Indexer {
 }
 
 export class IndexExpression extends Expression {
-    constructor (readonly exp: Expression, readonly indexers: Indexer[]) { super(); }
+    constructor (readonly exp: Expression, readonly indexer: Indexer) { super(); }
 
     eval(env: DynamicEnvironment): Value {
         const val = this.exp.eval(env);
-        return this.indexers
-            .map(indexer => indexer.index.eval(env))
-            .reduce((v, i) => typeof (i.value) === "string" ? val.field(i.value) : unexpectedType(i, "string"), val);
+        const i = this.indexer.index.eval(env);
+        return typeof (i.value) === "string" || typeof (i.value) === "number" ? val.field(i.value) : unexpectedType(i, "string");
     }
 
     toString() {
-        return `${this.exp}${this.indexers.reduce((s, i) => s + i.toString(), "")}`;
+        return `${this.exp}${this.indexer}`;
     }
 }
 

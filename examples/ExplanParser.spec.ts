@@ -46,7 +46,18 @@ describe("Units", () => {
     it("referenceExpression", () => {
         parse(Implementation.referenceExpression).against(" foo bar").shouldBeReversible();
         parse(Implementation.referenceExpression).against(" foo 0 1 bar baz").shouldBeReversible();
-        parse(Implementation.referenceExpression).against(" foo 0 1 in").shouldPassTheStream(" in");
+        expect(parse(Implementation.referenceExpression).against(" foo 0 1 in").remainingStream()).to.be.eq(" in");
+    });
+
+    it("indexer", () => {
+        parse(Implementation.indexer).against("[0]").shouldBeReversible();
+        parse(Implementation.indexer).against('["0"]').shouldBeReversible();
+    });
+
+    it("indexExpression", () => {
+        parse(Implementation.indexExpression).against('foo["0"]').shouldBeReversible();
+        parse(Implementation.indexExpression).against("foo['0']").shouldBeReversible();
+        parse(Implementation.indexExpression).against("foo[0]").shouldBeReversible();
     });
 
     it("topId", () => {
@@ -83,6 +94,7 @@ describe("Units", () => {
         }
 
         it("number", () => {
+            expect(evaluate<number>("0")).equal(0);
             expect(evaluate<number>("100")).equal(100);
             expect(evaluate<number>("042")).equal(42);
         });
@@ -116,13 +128,10 @@ describe("Units", () => {
             expectEval<number>("(13, 42) 1").to.be.eq(42);
         });
 
-        describe("complex", () => {
-            const letfact = "letfun fact n = if n <= 1 then 1 else n * fact:(n-1) ";
-            const letA = "let a = 5";
-            it("letfun alone works", () => {
-                expectEval<number>("letfun f x = x in f:3").eq(3);
-                expectEval<number>(letfact + "in fact: 5").eq(120);
-            });
+        it("indexExpression", () => {
+            expectEval<number>('(13, 42) ["0"]').to.be.eq(13);
+            expectEval<number>("(13, 42) [0]").to.be.eq(13);
+            expectEval<number>("(13, (42, 11), 7) [1]['0']").to.be.eq(42);
         });
     });
 });
