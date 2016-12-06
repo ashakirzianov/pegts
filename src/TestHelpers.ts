@@ -24,7 +24,6 @@ export class ExpectParser<T> {
 }
 
 export class Expectations<T> {
-    readonly expect = this;
 
     constructor(readonly parser: Parser<string, T>, readonly input: string) {}
 
@@ -54,6 +53,13 @@ export class Expectations<T> {
 
     result() {
         return this.matchOrThrow();
+    }
+
+    shouldPassTheStream(nextStream: string) {
+        const result = this.parser.parse(stringInput(this.input));
+        expect(result.success).to.be.true;
+        const next = result.success ? result.next : ThrowError("Unexpected undefined");
+        expect(next.stream).to.be.eq(nextStream);
     }
 
     private matchOrThrow() {

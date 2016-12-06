@@ -63,8 +63,8 @@ export namespace Implementation {
     const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral);
-    const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
-    const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
+    export const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
+    export const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
     const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
     const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
@@ -85,7 +85,7 @@ export namespace Implementation {
         .followedBy(fnArrow)
         .followedBy(expression)
         .produce(explan.AnonymousFuncExpression);
-    const referenceExpression = topId.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
+    export const identifierExpression = topId.produce(explan.IdentifierExpression);
 
     export const commaExpression = comma.followedBy(expression).produce(explan.CommaExpression);
     export const expressionList = expression
@@ -96,9 +96,10 @@ export namespace Implementation {
     const atomExpression = either<explan.Expression>(namedFuncExpression)
         .or(anonymousFuncExpression)
         .or(literalExpression)
-        .or(referenceExpression)
+        .or(identifierExpression)
         .or(tupleExpression);
 
+    export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
     export const callExpression = pre.binary(atomExpression, colon, explan.CallExpression);
     const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
     const addExpression = pre.binary(multExpression, addPrescOperator, explan.BinaryExpression);
