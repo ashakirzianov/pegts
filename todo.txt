@@ -5,9 +5,9 @@ Short list
 - ParserChainBuilder:
     * produceArray
 - Explan:
+    * make SyntaxTree root for every language element
     * constructors
     * pattern matching
-    * index reference
     * is operator
     * environment interface
     * Value type: value -> value()

@@ -25,7 +25,7 @@ export class StringLiteral {
 
     private unqoute(str: string) {
         return str[0] === "'" ?
-            (str[str.length-1] === "'" ? str.slice(1, str.length - 1) : str)
+            (str[str.length - 1] === "'" ? str.slice(1, str.length - 1) : str)
             : (str[0] === '"' ? str.slice(1, str.length - 1) : str);
     }
 }

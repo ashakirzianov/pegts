@@ -1,5 +1,5 @@
 import { Expression } from "./Expression";
-// declare class Expression {};
+import { DynamicEnvironment } from "./Core";
 
 export type Value = NumValue | BoolValue | StringValue | FuncValue | RecordValue | ErrorValue;
 export type ValueKind = "num" | "bool" | "string" | "func" | "rec";
@@ -90,13 +90,4 @@ export function operatorMismatch(left: Value, right: Value, op: string) {
 
 export function unknownIdentifier(id: Key) {
     return new ErrorValue(`Unknown identifier: ${id}`);
-}
-
-export type KeyValue = { key: string, value: Value };
-export class DynamicEnvironment {
-    constructor(readonly kvp: KeyValue | undefined = undefined, readonly parent: DynamicEnvironment | undefined = undefined) { }
-
-    get(key: string): Value | undefined {
-        return this.kvp && this.kvp.key === key ? this.kvp.value : this.parent && this.parent.get(key);
-    }
 }

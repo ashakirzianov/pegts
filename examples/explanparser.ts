@@ -90,11 +90,7 @@ export namespace Implementation {
         .produce(explan.AnonymousFuncExpression);
     export const identifierExpression = topId.produce(explan.IdentifierExpression);
 
-    export const commaExpression = comma.followedBy(expression).produce(explan.CommaExpression);
-    export const expressionList = expression
-        .followedBy(commaExpression.anyNumber())
-        .followedBy(comma.maybe())
-        .produce(explan.ExpressionList);
+    export const expressionList = pre.syntaxList(expression, comma, explan.ExpressionList);
     export const tupleExpression = openOval.followedBy(expressionList).followedBy(closeOval).produce(explan.TupleExpression);
     const atomExpression = either<explan.Expression>(namedFuncExpression)
         .or(anonymousFuncExpression)

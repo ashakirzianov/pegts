@@ -1,6 +1,7 @@
-import { Symbol, Keyword, Identifier, Trivia } from "./Core";
 import {
-    DynamicEnvironment,
+    Symbol, Keyword, Identifier, Trivia, DynamicEnvironment, SyntaxList,
+} from "./Core";
+import {
     Value, FuncValue, NumValue, BoolValue, ErrorValue, StringValue, RecordValue,
     unknownIdentifier, typeMismatch, unexpectedType, operatorMismatch, // TODO: consider move to the Expression.ts
 } from "./Value";
@@ -104,22 +105,7 @@ export class BinaryExpression extends Expression {
     }
 }
 
-export class CommaExpression {
-    constructor(readonly comma: Symbol, readonly exp: Expression) {}
-
-    toString() {
-        return `${this.comma}${this.exp}`;
-    }
-}
-
-export class ExpressionList {
-    constructor(readonly head: Expression, readonly tail: CommaExpression[], readonly comma?: Symbol) {}
-
-    toString() {
-        const list = this.tail.reduce((l, ce) => `${l}${ce.comma}${ce.exp}`, this.head.toString());
-        return this.comma ? list + this.comma.toString() : list;
-    }
-}
+export class ExpressionList extends SyntaxList<Expression, Symbol> {}
 
 export class TupleExpression extends Expression {
     constructor(readonly lp: Symbol, readonly exps: ExpressionList, readonly rp: Symbol) { super(); }
@@ -127,7 +113,7 @@ export class TupleExpression extends Expression {
     eval(env: DynamicEnvironment) {
         const head = this.exps.head.eval(env);
         const tail = this.exps.tail.reduce((arr, e) => {
-            arr.push(e.exp.eval(env));
+            arr.push(e.syntax.eval(env));
             return arr;
         }, [head]);
         return tail.length > 1 ? new RecordValue(tail) : head;

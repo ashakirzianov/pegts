@@ -54,3 +54,25 @@ export interface PostConstructor<TExp, TPost> {
 export function postfix<TExp, TPost>(exp: ParserBuilder<string, TExp>, post: ParserBuilder<string, TPost>, con: PostConstructor<TExp, TPost>) {
     return exp.followedBy(post.anyNumber()).adopt((head, tail) => tail.reduce((e, p) => new con(e, p), head));
 }
+
+export type SeparatorSyntax<TSeparator, TSyntax> = { separator: TSeparator, syntax: TSyntax };
+export interface SyntaxListConstructor<TSyntax, TSeparator, TResult> {
+    new (head: TSyntax, tail: Array<SeparatorSyntax<TSeparator, TSyntax>>, last?: TSeparator): TResult;
+}
+
+export function syntaxList<TSyntax, TSeparator, TResult>(
+    syntax: ParserBuilder<string, TSyntax>,
+    separator: ParserBuilder<string, TSeparator>,
+    con: SyntaxListConstructor<TSyntax, TSeparator, TResult>,
+    ): ParserBuilder<string, TResult> {
+    const separatorSyntax = separator.followedBy(syntax).adopt((sep, syn) => {
+        return {
+            separator: sep,
+            syntax: syn,
+        };
+    });
+    return syntax
+        .followedBy(separatorSyntax.anyNumber())
+        .followedBy(separator.maybe())
+        .produce(con);
+}

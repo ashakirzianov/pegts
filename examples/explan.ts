@@ -1,7 +1,5 @@
-import {
-    DynamicEnvironment, Value,
-} from "./Value";
-
+import { Value } from "./Value";
+import { DynamicEnvironment } from "./Core";
 import { Expression } from "./Expression";
 
 export function evaluate(exp: Expression) {

@@ -17,6 +17,7 @@
             false
         ],
         "no-namespace": false,
+        "prefer-for-of": false,
         "max-classes-per-file": [
             false
         ]

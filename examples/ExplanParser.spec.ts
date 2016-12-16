@@ -16,13 +16,6 @@ describe("Units", () => {
         parse(Implementation.trivia).against("  \n\r some").shouldMatch();
     });
 
-    it("commaExpression", () => {
-        parse(Implementation.commaExpression).against(", a").shouldBeReversible();
-        parse(Implementation.commaExpression).against("  ,5 + 8").shouldBeReversible();
-        parse(Implementation.commaExpression.anyNumber()).against("").shouldProduce([]);
-        parse(Implementation.commaExpression.anyNumber()).against(", 2 , 5").shouldMatchString(", 2, , 5");
-    });
-
     it("expressionList", () => {
         parse(Implementation.expressionList).against("   x").should(el => !!el.tail);
         parse(Implementation.expressionList).against("   x").shouldBeReversible();
