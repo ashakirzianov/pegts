@@ -17,5 +17,13 @@
         "mult",
         "somesome",
         "unqoute"
-    ]
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/node_modules": true,
+        "**/.DS_Store": true
+    }
 }
