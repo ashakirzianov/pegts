@@ -5,7 +5,7 @@ export { Parser } from "./Core";
 
 export {
     startsWith, builder,
-    atLeastOne, anyNumberOf, maybe, iff, iffNot,
+    atLeastOne, anyNumberOf, maybe, ifStarts, ifNotStarts,
     ParserBuilder,
 } from "./ParserBuilder";
 

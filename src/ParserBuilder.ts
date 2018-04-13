@@ -33,11 +33,11 @@ export function maybe<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO | un
     return builder(optional(parser));
 }
 
-export function iff<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+export function ifStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
     return new PredicateParserBuilderImp(and(parser));
 }
 
-export function iffNot<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+export function ifNotStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
     return new PredicateParserBuilderImp(not(parser));
 }
 
@@ -104,7 +104,7 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
     }
 
     not() {
-        return iffNot(this.parser);
+        return ifNotStarts(this.parser);
     }
 
     toString() {
@@ -119,7 +119,7 @@ function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {
 class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> implements ManyParserBuilder<TI, TO> {
     constructor(parser: Parser<TI, Many<TO>>) { super(parser); }
 
-    reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+    reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue: TO) {
         return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
@@ -127,7 +127,7 @@ class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> imple
         return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
-    reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+    reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue: TO) {
         return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 

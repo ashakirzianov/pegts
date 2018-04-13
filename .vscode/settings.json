@@ -4,5 +4,26 @@
     "search.exclude": {
         "node_modules": true,
         "dist": true
+    },
+    "cSpell.words": [
+        "Presc",
+        "Shakirzianov",
+        "alphanum",
+        "combinator",
+        "cond",
+        "explan",
+        "exps",
+        "letfun",
+        "mult",
+        "somesome",
+        "unqoute"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/node_modules": true,
+        "**/.DS_Store": true
     }
 }

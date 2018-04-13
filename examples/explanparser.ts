@@ -1,29 +1,23 @@
 import { Parser } from "../src/Core";
-// import {
-//     Trivia, Symbol, Keyword,
-//     Expression, BinaryExpression, LiteralExpression, IfExpression, LetExpression, IdentifierExpression, ParenthesisExpression,
-//     FuncExpression, CallExpression,
-//     LetDeclaration, NumLiteral, BoolLiteral, StringLiteral, Identifier,
-// } from "./explan";
 import * as explan from "./explan";
 import {
     atLeastOne, anyNumberOf,
     startsWith, either, builder,
     str, stringInput,
     recursive,
-    iff, iffNot,
+    ifStarts, ifNotStarts,
 } from "../src/fluentBuilder";
 
 import * as pre from "../src/Predefined";
 
 export namespace Implementation {
-    const add = str("+").parser;
-    const sub = str("-").parser;
-    const mult = str("*").parser;
-    const div = str("/").parser;
-    const eq = str("==").parser;
-    const lessThan = str("<=").parser;
-    const grThan = str("=>").parser;
+    const add = str("+");
+    const sub = str("-");
+    const mult = str("*");
+    const div = str("/");
+    const eq = str("==");
+    const lessThan = str("<=");
+    const grThan = str("=>");
 
     export const trivia = pre.trivia.produce(explan.Trivia);
 
@@ -66,8 +60,8 @@ export namespace Implementation {
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
     const stringLiteral = trivia.followedBy(pre.aString).produce(explan.StringLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral).or(stringLiteral);
-    export const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
-    export const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
+    export const topId = trivia.followedBy(ifNotStarts(keyword).then(pre.identifier)).produce(explan.Identifier);
+    export const fieldId = trivia.followedBy(ifNotStarts(keyword).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
     const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
     const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
@@ -98,7 +92,6 @@ export namespace Implementation {
         .or(identifierExpression)
         .or(tupleExpression);
 
-    // export const referenceExpression = atomExpression.followedBy(fieldId.anyNumber()).produce(explan.ReferenceExpression);
     export const referenceExpression = pre.postfix(atomExpression, fieldId, explan.ReferenceExpression);
     export const indexer = openSq.followedBy(expression).followedBy(closeSq).produce(explan.Indexer);
     export const indexExpression = pre.postfix(referenceExpression, indexer, explan.IndexExpression);
@@ -142,7 +135,7 @@ export namespace Implementation {
 }
 
 export const parser = Implementation.expression;
-// export const parser = iffNot<string>(str("foo")).then(id);
+
 export default function parseString(source: string) {
     return parser.parse(stringInput(source));
 }
