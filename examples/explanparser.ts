@@ -17,13 +17,13 @@ import {
 import * as pre from "../src/Predefined";
 
 export namespace Implementation {
-    const add = str("+").parser;
-    const sub = str("-").parser;
-    const mult = str("*").parser;
-    const div = str("/").parser;
-    const eq = str("==").parser;
-    const lessThan = str("<=").parser;
-    const grThan = str("=>").parser;
+    const add = str("+");
+    const sub = str("-");
+    const mult = str("*");
+    const div = str("/");
+    const eq = str("==");
+    const lessThan = str("<=");
+    const grThan = str("=>");
 
     export const trivia = pre.trivia.produce(explan.Trivia);
 
@@ -66,8 +66,8 @@ export namespace Implementation {
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
     const stringLiteral = trivia.followedBy(pre.aString).produce(explan.StringLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral).or(stringLiteral);
-    export const topId = trivia.followedBy(ifNotStarts(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
-    export const fieldId = trivia.followedBy(ifNotStarts(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
+    export const topId = trivia.followedBy(ifNotStarts(keyword).then(pre.identifier)).produce(explan.Identifier);
+    export const fieldId = trivia.followedBy(ifNotStarts(keyword).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
     const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
     const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
