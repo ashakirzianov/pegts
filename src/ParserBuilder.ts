@@ -119,7 +119,7 @@ function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {
 class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> implements ManyParserBuilder<TI, TO> {
     constructor(parser: Parser<TI, Many<TO>>) { super(parser); }
 
-    reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+    reduce(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue: TO) {
         return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
@@ -127,7 +127,7 @@ class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> imple
         return adoptBuilder(this.parser, rs => rs.reduce(callbackfn, initialValue));
     }
 
-    reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue?: TO) {
+    reduceRight(callbackfn: (previousValue: TO, currentValue: TO, currentIndex: number, array: TO[]) => TO, initialValue: TO) {
         return adoptBuilder(this.parser, rs => rs.reduceRight(callbackfn, initialValue));
     }
 
