@@ -11,7 +11,7 @@ import {
     startsWith, either, builder,
     str, stringInput,
     recursive,
-    iff, iffNot,
+    ifStarts, ifNotStarts,
 } from "../src/fluentBuilder";
 
 import * as pre from "../src/Predefined";
@@ -66,8 +66,8 @@ export namespace Implementation {
     const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
     const stringLiteral = trivia.followedBy(pre.aString).produce(explan.StringLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral).or(stringLiteral);
-    export const topId = trivia.followedBy(iffNot(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
-    export const fieldId = trivia.followedBy(iffNot(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
+    export const topId = trivia.followedBy(ifNotStarts(keyword.parser).then(pre.identifier)).produce(explan.Identifier);
+    export const fieldId = trivia.followedBy(ifNotStarts(keyword.parser).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
 
     const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
     const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
@@ -142,7 +142,7 @@ export namespace Implementation {
 }
 
 export const parser = Implementation.expression;
-// export const parser = iffNot<string>(str("foo")).then(id);
+
 export default function parseString(source: string) {
     return parser.parse(stringInput(source));
 }

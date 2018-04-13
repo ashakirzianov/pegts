@@ -33,11 +33,11 @@ export function maybe<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO | un
     return builder(optional(parser));
 }
 
-export function iff<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+export function ifStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
     return new PredicateParserBuilderImp(and(parser));
 }
 
-export function iffNot<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
+export function ifNotStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder<TI, any> {
     return new PredicateParserBuilderImp(not(parser));
 }
 
@@ -104,7 +104,7 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
     }
 
     not() {
-        return iffNot(this.parser);
+        return ifNotStarts(this.parser);
     }
 
     toString() {

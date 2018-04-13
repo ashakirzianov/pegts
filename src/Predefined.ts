@@ -1,5 +1,5 @@
 import {
-    iff, iffNot,
+    ifStarts, ifNotStarts,
     str, notStr, anyChar, charset,
     Parser, ParserBuilder, StringParserBuilder,
 } from "./FluentBuilder";
