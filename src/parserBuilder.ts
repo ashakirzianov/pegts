@@ -7,7 +7,7 @@ import {
     sequence, choice, zeroMore, oneMore, optional, and, not,
     map, proxy,
     Pair, Many, ProxyParser,
-} from "./Operators";
+} from "./operators";
 
 export function startsWith<TI, TO>(parser: Parser<TI, TO>): ParserChainBuilder1<TI, TO> {
     return new WeakParserChainBuilder<TI>(parser) as ParserChainBuilder1<TI, TO>;
