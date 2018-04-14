@@ -1,5 +1,5 @@
 {
-  "name": "peg-ts",
+  "name": "pegts",
   "version": "0.0.1",
   "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.2",
     "@types/mocha": "^5.0.0",
-    "@types/node": "^9.6.4",
+    "@types/node": "^9.6.5",
     "chai": "^3.5.0",
     "chai-subset": "^1.3.0",
     "mocha": "^3.2.0",
@@ -33,7 +33,7 @@
   "author": "Anton Shakirzianov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ashakirzianov/peg-ts/issues"
+    "url": "https://github.com/ashakirzianov/pegts/issues"
   },
-  "homepage": "https://github.com/ashakirzianov/peg-ts#readme"
+  "homepage": "https://github.com/ashakirzianov/pegts#readme"
 }

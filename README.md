@@ -1,1 +1,1 @@
-# peg-ts
+# pegts
