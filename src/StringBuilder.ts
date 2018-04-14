@@ -18,7 +18,7 @@ export function prefix(str: string, opts: StringComparisonOptions = undefined): 
     return new PrefixParser(str, opts);
 }
 
-export function reg(regexp: RegExp, lookAhead: number = 1) {
+export function reg(regexp: RegExp, lookAhead: number = 1): StringParserBuilder {
     return new StringParserBuilderImp(new RegexpParser(regexp, lookAhead));
 }
 

@@ -21,11 +21,11 @@ export function either<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO> {
     return builder(parser);
 }
 
-export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>) {
+export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>): ManyParserBuilder<TI, TO> {
     return new ManyParserBuilderImp(zeroMore(parser));
 }
 
-export function atLeastOne<TI, TO>(parser: Parser<TI, TO>) {
+export function atLeastOne<TI, TO>(parser: Parser<TI, TO>): ManyParserBuilder<TI, TO> {
     return new ManyParserBuilderImp(oneMore(parser));
 }
 

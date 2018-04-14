@@ -1,14 +1,14 @@
-import { Parser } from "../src/Core";
-import * as explan from "./explan";
+import * as explan from './explan';
+import { Parser } from '../src/index';
 import {
     atLeastOne, anyNumberOf,
     startsWith, either, builder,
     str, stringInput,
     recursive,
     ifStarts, ifNotStarts,
-} from "../src/fluentBuilder";
-
-import * as pre from "../src/Predefined";
+    predefined as pre,
+    ParserBuilder, Fail, Success,
+} from '../src/index';
 
 export namespace Implementation {
     const add = str("+");

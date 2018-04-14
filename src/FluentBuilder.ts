@@ -1,4 +1,4 @@
-import { Parser, Input, Fail } from "./Core";
+import { Parser, Input, Fail, Result } from "./Core";
 import { ParserBuilder, builder } from "./ParserBuilder";
 
 export { Parser } from "./Core";
@@ -27,7 +27,7 @@ export class RecursiveParser<TI, TO> implements Parser<TI, TO> {
         this.parser = parser;
     }
 
-    parse(input: Input<TI>) {
+    parse(input: Input<TI>): Result<TI, TO> {
         return this.parser ? this.parser.parse(input) : new Fail(0);
     }
 
