@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "full": "npm run build && npm run lint && npm run test",
     "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",

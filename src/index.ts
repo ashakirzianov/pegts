@@ -1,10 +1,9 @@
 export * from './core';
 
 export {
-    startsWith, builder,
-    atLeastOne, anyNumberOf, maybe, ifStarts, ifNotStarts,
-    recursive,
-    ParserBuilder, Parse,
+    startsWith, atLeastOne, anyNumberOf, maybe, ifStarts, ifNotStarts,
+    recursive, builder,
+    ParserBuilder, ProxyParserBuilder, Parse,
 } from './parserBuilder';
 
 export {

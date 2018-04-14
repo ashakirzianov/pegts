@@ -6,7 +6,7 @@ import {
     recursive,
     ifStarts, ifNotStarts,
     predefined as pre,
-    Parser, ParserBuilder, Fail, Success,
+    Parser, ParserBuilder, ProxyParserBuilder, Fail, Success,
 } from '../index';
 
 export namespace Implementation {
