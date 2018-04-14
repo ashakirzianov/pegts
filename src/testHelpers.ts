@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import { Parser } from "../src/Core";
-import { stringInput } from "../src/StringBuilder";
+import { expect } from 'chai';
+import { Parser } from './core';
+import { stringInput } from './stringBuilder';
 
 export default function parse<T>(parser: Parser<string, T>) {
     return new ExpectParser(parser);

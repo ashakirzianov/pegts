@@ -1,12 +1,12 @@
-import { Parser, Input, Success, Fail } from "./Core";
-import { WeakParserChainBuilder } from "./WeakParserChainBuilder";
-import { ParserChainBuilder1, ParserChainBuilder2 } from "./StrongParserChainBuilder";
+import { Parser, Input, Success, Fail } from './core';
+import { WeakParserChainBuilder } from './weakParserChainBuilder';
+import { ParserChainBuilder1, ParserChainBuilder2 } from './strongParserChainBuilder';
 
 import {
     pegPairLeft, pegPairRight,
     sequence, choice, zeroMore, oneMore, optional, and, not,
-    adopt,
-    Pair, Many,
+    map, proxy,
+    Pair, Many, ProxyParser,
 } from "./Operators";
 
 export function startsWith<TI, TO>(parser: Parser<TI, TO>): ParserChainBuilder1<TI, TO> {
@@ -21,11 +21,11 @@ export function either<TI, TO>(parser: Parser<TI, TO>): ParserBuilder<TI, TO> {
     return builder(parser);
 }
 
-export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>) {
+export function anyNumberOf<TI, TO>(parser: Parser<TI, TO>): ManyParserBuilder<TI, TO> {
     return new ManyParserBuilderImp(zeroMore(parser));
 }
 
-export function atLeastOne<TI, TO>(parser: Parser<TI, TO>) {
+export function atLeastOne<TI, TO>(parser: Parser<TI, TO>): ManyParserBuilder<TI, TO> {
     return new ManyParserBuilderImp(oneMore(parser));
 }
 
@@ -41,14 +41,30 @@ export function ifNotStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder
     return new PredicateParserBuilderImp(not(parser));
 }
 
+export function recursive<TI, TO>(): ProxyParserBuilder<TI, TO> {
+    return new ProxyParserBuilderImp(proxy());
+}
+
+export const Parse = {
+    startsWith,
+    builder,
+    either,
+    anyNumberOf,
+    atLeastOne,
+    maybe,
+    ifStarts,
+    ifNotStarts,
+    recursive,
+};
+
 export interface Constructor<T1, TR> {
     new (p1: T1) : TR;
 }
 
 export interface ParserBuilder<TI, TO> extends Parser<TI, TO> {
     readonly parser: Parser<TI, TO>;
-    produce<TR>(con: Constructor<TO, TR>): ParserBuilder<TI, TR>;
-    adopt<TR>(f: (v: TO) => TR): ParserBuilder<TI, TR>;
+    construct<TR>(con: Constructor<TO, TR>): ParserBuilder<TI, TR>;
+    map<TR>(f: (v: TO) => TR): ParserBuilder<TI, TR>;
     or(option: Parser<TI, TO>): ParserBuilder<TI, TO>;
     followedBy<TR>(next: Parser<TI, TR>): ParserChainBuilder2<TI, TO, TR>;
     atLeastOne(): ManyParserBuilder<TI, TO>;
@@ -68,6 +84,10 @@ export interface PredicateParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
     then<TR>(parser: Parser<TI, TR>): ParserBuilder<TI, TR>;
 }
 
+export interface ProxyParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
+    set(parser: Parser<TI, TO>): void;
+}
+
 class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
     constructor(readonly parser: Parser<TI, TO>) {}
 
@@ -75,12 +95,12 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
         return this.parser.parse(input);
     }
 
-    produce<TR>(con: Constructor<TO, TR>) {
-        return new ParserBuilderBase(adopt(this.parser, v => new con(v)));
+    construct<TR>(con: Constructor<TO, TR>) {
+        return new ParserBuilderBase(map(this.parser, v => new con(v)));
     }
 
-    adopt<TR>(f: (v: TO) => TR) {
-        return new ParserBuilderBase(adopt(this.parser, f));
+    map<TR>(f: (v: TO) => TR) {
+        return new ParserBuilderBase(map(this.parser, f));
     }
 
     or(otherParser: Parser<TI, TO>) {
@@ -113,7 +133,7 @@ class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
 }
 
 function adoptBuilder<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR) {
-    return builder(parser).adopt(f);
+    return builder(parser).map(f);
 }
 
 class ManyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, Many<TO>> implements ManyParserBuilder<TI, TO> {
@@ -140,6 +160,14 @@ class PredicateParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implem
     constructor(parser: Parser<TI, TO>) { super(parser); }
 
     then<TR>(next: Parser<TI, TR>): ParserBuilder<TI, TR> {
-        return this.followedBy(next).adopt((l, r) => r);
+        return this.followedBy(next).map((l, r) => r);
+    }
+}
+
+class ProxyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implements ProxyParserBuilder<TI, TO> {
+    constructor(parser: ProxyParser<TI, TO>) { super(parser); }
+
+    set(parser: Parser<TI, TO>): void {
+        (this.parser as ProxyParser<TI, TO>).set(parser);
     }
 }

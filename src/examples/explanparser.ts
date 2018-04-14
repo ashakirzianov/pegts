@@ -1,14 +1,13 @@
-import { Parser } from "../src/Core";
-import * as explan from "./explan";
+import * as explan from './explan';
 import {
     atLeastOne, anyNumberOf,
     startsWith, either, builder,
     str, stringInput,
     recursive,
     ifStarts, ifNotStarts,
-} from "../src/fluentBuilder";
-
-import * as pre from "../src/Predefined";
+    predefined as pre,
+    Parser, ParserBuilder, ProxyParserBuilder, Fail, Success,
+} from '../index';
 
 export namespace Implementation {
     const add = str("+");
@@ -19,10 +18,10 @@ export namespace Implementation {
     const lessThan = str("<=");
     const grThan = str("=>");
 
-    export const trivia = pre.trivia.produce(explan.Trivia);
+    export const trivia = pre.trivia.construct(explan.Trivia);
 
     function parseKeyword(word: string) {
-        return trivia.followedBy(str(word)).produce(explan.Keyword);
+        return trivia.followedBy(str(word)).construct(explan.Keyword);
     }
     const ifKeyword = parseKeyword("if");
     const thenKeyword = parseKeyword("then");
@@ -44,7 +43,7 @@ export namespace Implementation {
         .or(falseKeyword);
 
     function parseSymbol(sym: string) {
-        return trivia.followedBy(str(sym)).produce(explan.Symbol);
+        return trivia.followedBy(str(sym)).construct(explan.Symbol);
     }
 
     const eqSym = parseSymbol("=");
@@ -56,36 +55,35 @@ export namespace Implementation {
     const colon = parseSymbol(":");
     const comma = parseSymbol(",");
 
-    const numLiteral = trivia.followedBy(pre.float).produce(explan.NumLiteral);
-    const boolLiteral = trivia.followedBy(str("true").or("false")).produce(explan.BoolLiteral);
-    const stringLiteral = trivia.followedBy(pre.aString).produce(explan.StringLiteral);
+    const numLiteral = trivia.followedBy(pre.float).construct(explan.NumLiteral);
+    const boolLiteral = trivia.followedBy(str("true").or("false")).construct(explan.BoolLiteral);
+    const stringLiteral = trivia.followedBy(pre.aString).construct(explan.StringLiteral);
     const literal = either<explan.Literal>(numLiteral).or(boolLiteral).or(stringLiteral);
-    export const topId = trivia.followedBy(ifNotStarts(keyword).then(pre.identifier)).produce(explan.Identifier);
-    export const fieldId = trivia.followedBy(ifNotStarts(keyword).then(pre.alphanum.atLeastOne())).produce(explan.Identifier);
+    export const topId = trivia.followedBy(ifNotStarts(keyword).then(pre.identifier)).construct(explan.Identifier);
+    export const fieldId = trivia.followedBy(ifNotStarts(keyword).then(pre.alphanum.atLeastOne())).construct(explan.Identifier);
 
-    const boolPrescOperator = trivia.followedBy(eq).produce(explan.Symbol);
-    const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).produce(explan.Symbol);
-    const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(explan.Symbol);
-    const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(explan.Symbol);
+    const boolPrescOperator = trivia.followedBy(eq).construct(explan.Symbol);
+    const compPrescOperator = trivia.followedBy(either(lessThan).or(grThan)).construct(explan.Symbol);
+    const addPrescOperator = trivia.followedBy(either(add).or(sub)).construct(explan.Symbol);
+    const multPrescOperator = trivia.followedBy(either(mult).or(div)).construct(explan.Symbol);
 
-    const recExp = recursive<explan.Expression>();
-    export const expression = builder<string, explan.Expression>(recExp);
+    export const expression = recursive<string, explan.Expression>();
 
-    const literalExpression = literal.produce(explan.LiteralExpression);
+    const literalExpression = literal.construct(explan.LiteralExpression);
     const namedFuncExpression = fnKeyword
         .followedBy(topId)
         .followedBy(topId)
         .followedBy(fnArrow)
         .followedBy(expression)
-        .produce(explan.NamedFuncExpression);
+        .construct(explan.NamedFuncExpression);
     const anonymousFuncExpression = topId
         .followedBy(fnArrow)
         .followedBy(expression)
-        .produce(explan.AnonymousFuncExpression);
-    export const identifierExpression = topId.produce(explan.IdentifierExpression);
+        .construct(explan.AnonymousFuncExpression);
+    export const identifierExpression = topId.construct(explan.IdentifierExpression);
 
     export const expressionList = pre.syntaxList(expression, comma, explan.ExpressionList);
-    export const tupleExpression = openOval.followedBy(expressionList).followedBy(closeOval).produce(explan.TupleExpression);
+    export const tupleExpression = openOval.followedBy(expressionList).followedBy(closeOval).construct(explan.TupleExpression);
     const atomExpression = either<explan.Expression>(namedFuncExpression)
         .or(anonymousFuncExpression)
         .or(literalExpression)
@@ -93,7 +91,7 @@ export namespace Implementation {
         .or(tupleExpression);
 
     export const referenceExpression = pre.postfix(atomExpression, fieldId, explan.ReferenceExpression);
-    export const indexer = openSq.followedBy(expression).followedBy(closeSq).produce(explan.Indexer);
+    export const indexer = openSq.followedBy(expression).followedBy(closeSq).construct(explan.Indexer);
     export const indexExpression = pre.postfix(referenceExpression, indexer, explan.IndexExpression);
     export const callExpression = pre.binary(indexExpression, colon, explan.CallExpression);
     const multExpression = pre.binary(callExpression, multPrescOperator, explan.BinaryExpression);
@@ -108,30 +106,30 @@ export namespace Implementation {
         .followedBy(expression)
         .followedBy(elseKeyword)
         .followedBy(expression)
-        .produce(explan.IfExpression);
+        .construct(explan.IfExpression);
 
     const valDeclaration = letKeyword
         .followedBy(topId)
         .followedBy(eqSym)
         .followedBy(expression)
-        .produce(explan.LetValDeclaration);
+        .construct(explan.LetValDeclaration);
     const funDeclaration = letfunKeyword
         .followedBy(topId)
         .followedBy(topId)
         .followedBy(eqSym)
         .followedBy(expression)
-        .produce(explan.LetFuncDeclaration);
+        .construct(explan.LetFuncDeclaration);
     const declaration = either<explan.LetDeclaration>(valDeclaration).or(funDeclaration);
     const letExpression = declaration.atLeastOne()
         .followedBy(inKeyword)
         .followedBy(expression)
-        .produce(explan.LetExpression);
+        .construct(explan.LetExpression);
 
     const actualExpression = either<explan.Expression>(ifExpression)
         .or(letExpression)
         .or(arithmeticExpression);
 
-    recExp.set(actualExpression);
+    expression.set(actualExpression);
 }
 
 export const parser = Implementation.expression;

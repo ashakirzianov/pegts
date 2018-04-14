@@ -1,7 +1,7 @@
-import { expect } from "chai";
-import parse from "./TestHelpers";
-import * as op from "./Operators";
-import { prefix } from "./StringBuilder";
+import { expect } from 'chai';
+import parse from './testHelpers';
+import * as op from './operators';
+import { prefix } from './stringBuilder';
 
 describe("Operators", () => {
     const someParser = prefix("some");

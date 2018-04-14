@@ -1,11 +1,11 @@
 import {
     Symbol, Keyword, Identifier, Trivia, DynamicEnvironment, SyntaxList,
-} from "./Core";
+} from './core';
 import {
     Value, FuncValue, NumValue, BoolValue, ErrorValue, StringValue, RecordValue,
     unknownIdentifier, typeMismatch, unexpectedType, operatorMismatch, // TODO: consider move to the Expression.ts
-} from "./Value";
-import { Literal } from "./Literal";
+} from './value';
+import { Literal } from './literal';
 
 export abstract class Expression {
     as<T extends Expression>(): T {

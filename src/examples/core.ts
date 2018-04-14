@@ -1,4 +1,4 @@
-import { Value } from "./Value";
+import { Value } from './value';
 
 export type Binding = { key: string, value: Value };
 export type Bindings = Binding[];

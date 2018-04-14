@@ -5,16 +5,27 @@
         "node_modules": true,
         "dist": true
     },
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "**/node_modules/**",
+        "**/vscode-extension/**",
+        "**/.git/**",
+        ".vscode",
+        "typings"
+    ],
     "cSpell.words": [
         "Presc",
         "Shakirzianov",
         "alphanum",
         "combinator",
+        "combinatory",
         "cond",
         "explan",
         "exps",
         "letfun",
+        "lockfile",
         "mult",
+        "pegts",
         "somesome",
         "unqoute"
     ],
@@ -25,5 +36,33 @@
         "**/CVS": true,
         "**/node_modules": true,
         "**/.DS_Store": true
-    }
+    },
+    "cSpell.enabledLanguageIds": [
+        "asciidoc",
+        "c",
+        "cpp",
+        "csharp",
+        "css",
+        "go",
+        "handlebars",
+        "html",
+        "jade",
+        "javascript",
+        "javascriptreact",
+        "json",
+        "latex",
+        "less",
+        "markdown",
+        "php",
+        "plaintext",
+        "pub",
+        "python",
+        "restructuredtext",
+        "rust",
+        "scss",
+        "text",
+        "typescript",
+        "typescriptreact",
+        "yml"
+    ]
 }

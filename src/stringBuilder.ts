@@ -1,6 +1,6 @@
-import { Parser, Input, Success, Fail } from "./Core";
-import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
-import { ParserBuilder, Constructor, builder, either as eitherGeneric } from "./ParserBuilder";
+import { Parser, Input, Success, Fail } from './core';
+import { sequence, choice, zeroMore, oneMore, optional, not, and, map, pegPairLeft, pegPairRight } from './operators';
+import { ParserBuilder, Constructor, builder, either as eitherGeneric } from './parserBuilder';
 
 export type StringComparisonOptions = undefined | {
     readonly caseInsensitive?: boolean;
@@ -18,7 +18,7 @@ export function prefix(str: string, opts: StringComparisonOptions = undefined): 
     return new PrefixParser(str, opts);
 }
 
-export function reg(regexp: RegExp, lookAhead: number = 1) {
+export function reg(regexp: RegExp, lookAhead: number = 1): StringParserBuilder {
     return new StringParserBuilderImp(new RegexpParser(regexp, lookAhead));
 }
 
@@ -35,20 +35,33 @@ export function notStr(sob: StringOrParser): StringParserBuilder {
 }
 
 export function star(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
+    return new StringParserBuilderImp(map(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function plus(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
+    return new StringParserBuilderImp(map(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function question(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(optional(parser(sob)), op => op || ""));
+    return new StringParserBuilderImp(map(optional(parser(sob)), op => op || ""));
 }
 
 export function stringInput(str: string): Input<string> {
     return new StringInput(str);
 }
+
+export const Str = {
+    either,
+    charset,
+    prefix,
+    reg,
+    anyChar,
+    str,
+    notStr,
+    star,
+    plus,
+    question,
+};
 
 class StringInput implements Input<string> {
     constructor(readonly stream: string) {}
@@ -149,8 +162,9 @@ function parser(sob: StringOrParser): Parser<string, string> {
 
 export interface StringParserBuilder extends Parser<string, string> {
     readonly parser: Parser<string, string>;
-    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
-    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
+    generic(): ParserBuilder<string, string>;
+    construct<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
+    map<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
     or(other: StringOrParser): StringParserBuilder;
     followedBy(next: StringOrParser): StringParserBuilder;
     atLeastOne(): StringParserBuilder;
@@ -162,12 +176,16 @@ export interface StringParserBuilder extends Parser<string, string> {
 class StringParserBuilderImp implements Parser<string, string> {
     constructor(readonly parser: Parser<string, string>) {}
 
-    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
-        return builder(this.parser).produce(con);
+    generic() {
+        return builder(this.parser);
     }
 
-    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR> {
-        return builder(this.parser).adopt(f);
+    construct<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
+        return builder(this.parser).construct(con);
+    }
+
+    map<TR>(f: (v: string) => TR): ParserBuilder<string, TR> {
+        return builder(this.parser).map(f);
     }
 
     parse(input: Input<string>) {
@@ -179,7 +197,7 @@ class StringParserBuilderImp implements Parser<string, string> {
     }
 
     followedBy(next: StringOrParser) {
-        return  new StringParserBuilderImp(adopt(sequence(this.parser, parser(next)), p => pegPairLeft(p) + pegPairRight(p)));
+        return  new StringParserBuilderImp(map(sequence(this.parser, parser(next)), p => pegPairLeft(p) + pegPairRight(p)));
     }
 
     atLeastOne() {

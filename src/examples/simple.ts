@@ -1,21 +1,4 @@
-# pegts
-TypeScript library for writing combinatory parsers based on peg-like operators using fluent builder syntax.
-Wasn't really intended for real use and was developed purely for fun.
-
-## Installation
-
-JavaScript:
-
-`npm install --save pegts`
-
-TypeScript:
-
-`npm install --save pegts @types/pegts`
-
-## Usage:
-
-```typescript
-import { Parse, Str } from 'pegts';
+import { Parse, Str } from '../index';
 
 type Expression = LiteralExpression | OperatorExpression;
 type LiteralExpression = { literal: number };
@@ -56,4 +39,3 @@ const parExpression = leftPar
     .map((l, e, r) => e);
 
 mathExpression.set(parExpression.or(addExpression));
-```

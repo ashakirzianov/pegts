@@ -1,5 +1,5 @@
-import { Trivia } from "./Core";
-import { Value, NumValue, StringValue, BoolValue } from "./Value";
+import { Trivia } from './core';
+import { Value, NumValue, StringValue, BoolValue } from './value';
 
 export type Literal = NumLiteral | StringLiteral | BoolLiteral;
 export class NumLiteral {

@@ -1,4 +1,4 @@
-import { Parser, Input, Result, Success, Fail } from "./Core";
+import { Parser, Input, Result, Success, Fail } from './core';
 
 export type Pair<TOL, TOR> = { pegLeft: TOL, pegRight: TOR };
 function pair<TOL, TOR>(left: TOL, right: TOR): Pair<TOL, TOR> {
@@ -175,11 +175,11 @@ class NotPredicate<TI, TO> implements Parser<TI, Object> {
     }
 }
 
-export function adopt<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
-    return new Adopt(parser, f);
+export function map<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
+    return new Map(parser, f);
 }
 
-class Adopt<TI, TO, TR> implements Parser<TI, TR> {
+class Map<TI, TO, TR> implements Parser<TI, TR> {
     constructor(readonly parser: Parser<TI, TO>, readonly f: (v: TO) => TR) { }
 
     parse(input: Input<TI>) {
@@ -189,5 +189,25 @@ class Adopt<TI, TO, TR> implements Parser<TI, TR> {
 
     toString() {
         return this.parser.toString();
+    }
+}
+
+export function proxy<TI, TO>() {
+    return new ProxyParser<TI, TO>();
+}
+
+export class ProxyParser<TI, TO> implements Parser<TI, TO> {
+    private parser?: Parser<TI, TO> = undefined;
+
+    set(parser: Parser<TI, TO>) {
+        this.parser = parser;
+    }
+
+    parse(input: Input<TI>): Result<TI, TO> {
+        return this.parser ? this.parser.parse(input) : new Fail(0);
+    }
+
+    toString() {
+        return this.parser ? this.parser.toString() : "<null>";
     }
 }
