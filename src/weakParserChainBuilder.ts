@@ -1,6 +1,6 @@
 import { Parser } from './core';
 import { ParserBuilder, builder } from './parserBuilder';
-import { sequence, adopt, flatPegPair } from './operators';
+import { sequence, map, flatPegPair } from './operators';
 
 export interface ConstructorAny {
     new(...params: any[]): any;
@@ -9,14 +9,14 @@ export interface ConstructorAny {
 export class WeakParserChainBuilder<TI> {
     constructor(readonly parser: Parser<TI, any>, readonly parent: WeakParserChainBuilder<TI> | undefined = undefined) {}
 
-    produce(con: ConstructorAny): ParserBuilder<TI, any> {
-        return this.adopt((...params: any[]) => {
+    construct(con: ConstructorAny): ParserBuilder<TI, any> {
+        return this.map((...params: any[]) => {
             return new (Function.prototype.bind.apply(con, [undefined].concat(params)));
         });
     }
 
-    adopt(f: (...params: any[]) => any) {
-        return builder(adopt(this.actualParser(), pairOrAny => f.apply(undefined, flatPegPair(pairOrAny))));
+    map(f: (...params: any[]) => any) {
+        return builder(map(this.actualParser(), pairOrAny => f.apply(undefined, flatPegPair(pairOrAny))));
     }
 
     followedBy(otherParser: Parser<TI, any>) {

@@ -43,8 +43,8 @@ export function binary<TExp, TOp>(
     expParser: ParserBuilder<string, TExp>, opParser: ParserBuilder<string, TOp>, con: BinaryConstructor<TExp, TOp>,
     ): ParserBuilder<string, TExp> {
         return expParser
-            .followedBy(opParser.followedBy(expParser).adopt((o, e) => { return { op: o, exp: e }; }).anyNumber())
-            .adopt((init, rest) => rest.reduce((acc, pair) => new con(acc, pair.op, pair.exp), init));
+            .followedBy(opParser.followedBy(expParser).map((o, e) => { return { op: o, exp: e }; }).anyNumber())
+            .map((init, rest) => rest.reduce((acc, pair) => new con(acc, pair.op, pair.exp), init));
 }
 
 export interface PostConstructor<TExp, TPost> {
@@ -52,7 +52,7 @@ export interface PostConstructor<TExp, TPost> {
 }
 
 export function postfix<TExp, TPost>(exp: ParserBuilder<string, TExp>, post: ParserBuilder<string, TPost>, con: PostConstructor<TExp, TPost>) {
-    return exp.followedBy(post.anyNumber()).adopt((head, tail) => tail.reduce((e, p) => new con(e, p), head));
+    return exp.followedBy(post.anyNumber()).map((head, tail) => tail.reduce((e, p) => new con(e, p), head));
 }
 
 export type SeparatorSyntax<TSeparator, TSyntax> = { separator: TSeparator, syntax: TSyntax };
@@ -65,7 +65,7 @@ export function syntaxList<TSyntax, TSeparator, TResult>(
     separator: ParserBuilder<string, TSeparator>,
     con: SyntaxListConstructor<TSyntax, TSeparator, TResult>,
     ): ParserBuilder<string, TResult> {
-    const separatorSyntax = separator.followedBy(syntax).adopt((sep, syn) => {
+    const separatorSyntax = separator.followedBy(syntax).map((sep, syn) => {
         return {
             separator: sep,
             syntax: syn,
@@ -74,5 +74,5 @@ export function syntaxList<TSyntax, TSeparator, TResult>(
     return syntax
         .followedBy(separatorSyntax.anyNumber())
         .followedBy(separator.maybe())
-        .produce(con);
+        .construct(con);
 }

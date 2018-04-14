@@ -175,11 +175,11 @@ class NotPredicate<TI, TO> implements Parser<TI, Object> {
     }
 }
 
-export function adopt<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
-    return new Adopt(parser, f);
+export function map<TI, TO, TR>(parser: Parser<TI, TO>, f: (v: TO) => TR): Parser<TI, TR> {
+    return new Map(parser, f);
 }
 
-class Adopt<TI, TO, TR> implements Parser<TI, TR> {
+class Map<TI, TO, TR> implements Parser<TI, TR> {
     constructor(readonly parser: Parser<TI, TO>, readonly f: (v: TO) => TR) { }
 
     parse(input: Input<TI>) {

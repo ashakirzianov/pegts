@@ -1,5 +1,5 @@
 import { Parser, Input, Success, Fail } from './core';
-import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from './operators';
+import { sequence, choice, zeroMore, oneMore, optional, not, and, map, pegPairLeft, pegPairRight } from './operators';
 import { ParserBuilder, Constructor, builder, either as eitherGeneric } from './parserBuilder';
 
 export type StringComparisonOptions = undefined | {
@@ -35,15 +35,15 @@ export function notStr(sob: StringOrParser): StringParserBuilder {
 }
 
 export function star(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
+    return new StringParserBuilderImp(map(zeroMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function plus(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
+    return new StringParserBuilderImp(map(oneMore(parser(sob)), ss => ss.reduce((a, s) => a + s, "")));
 }
 
 export function question(sob: StringOrParser): StringParserBuilder {
-    return new StringParserBuilderImp(adopt(optional(parser(sob)), op => op || ""));
+    return new StringParserBuilderImp(map(optional(parser(sob)), op => op || ""));
 }
 
 export function stringInput(str: string): Input<string> {
@@ -163,8 +163,8 @@ function parser(sob: StringOrParser): Parser<string, string> {
 export interface StringParserBuilder extends Parser<string, string> {
     readonly parser: Parser<string, string>;
     generic(): ParserBuilder<string, string>;
-    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
-    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
+    construct<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
+    map<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
     or(other: StringOrParser): StringParserBuilder;
     followedBy(next: StringOrParser): StringParserBuilder;
     atLeastOne(): StringParserBuilder;
@@ -180,12 +180,12 @@ class StringParserBuilderImp implements Parser<string, string> {
         return builder(this.parser);
     }
 
-    produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
-        return builder(this.parser).produce(con);
+    construct<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
+        return builder(this.parser).construct(con);
     }
 
-    adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR> {
-        return builder(this.parser).adopt(f);
+    map<TR>(f: (v: string) => TR): ParserBuilder<string, TR> {
+        return builder(this.parser).map(f);
     }
 
     parse(input: Input<string>) {
@@ -197,7 +197,7 @@ class StringParserBuilderImp implements Parser<string, string> {
     }
 
     followedBy(next: StringOrParser) {
-        return  new StringParserBuilderImp(adopt(sequence(this.parser, parser(next)), p => pegPairLeft(p) + pegPairRight(p)));
+        return  new StringParserBuilderImp(map(sequence(this.parser, parser(next)), p => pegPairLeft(p) + pegPairRight(p)));
     }
 
     atLeastOne() {
