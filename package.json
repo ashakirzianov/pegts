@@ -1,13 +1,13 @@
 {
   "name": "pegts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Peg Operators for TypeScript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "full": "npm run build && npm run lint && npm run test",
-    "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",
-    "test": "mocha ./src/**/*.spec.ts --compilers ts:ts-node/register ",
+    "lint": "tslint ./src/**/*.ts",
+    "test": "mocha src/*.spec.ts src/**/*.spec.ts --compilers ts:ts-node/register ",
     "build": "tsc"
   },
   "repository": {
@@ -36,5 +36,6 @@
   "bugs": {
     "url": "https://github.com/ashakirzianov/pegts/issues"
   },
-  "homepage": "https://github.com/ashakirzianov/pegts#readme"
+  "homepage": "https://github.com/ashakirzianov/pegts#readme",
+  "dependencies": {}
 }
