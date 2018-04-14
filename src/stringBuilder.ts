@@ -50,6 +50,19 @@ export function stringInput(str: string): Input<string> {
     return new StringInput(str);
 }
 
+export const Str = {
+    either,
+    charset,
+    prefix,
+    reg,
+    anyChar,
+    str,
+    notStr,
+    star,
+    plus,
+    question,
+};
+
 class StringInput implements Input<string> {
     constructor(readonly stream: string) {}
 
@@ -149,6 +162,7 @@ function parser(sob: StringOrParser): Parser<string, string> {
 
 export interface StringParserBuilder extends Parser<string, string> {
     readonly parser: Parser<string, string>;
+    generic(): ParserBuilder<string, string>;
     produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR>;
     adopt<TR>(f: (v: string) => TR): ParserBuilder<string, TR>;
     or(other: StringOrParser): StringParserBuilder;
@@ -161,6 +175,10 @@ export interface StringParserBuilder extends Parser<string, string> {
 
 class StringParserBuilderImp implements Parser<string, string> {
     constructor(readonly parser: Parser<string, string>) {}
+
+    generic() {
+        return builder(this.parser);
+    }
 
     produce<TR>(con: Constructor<string, TR>): ParserBuilder<string, TR> {
         return builder(this.parser).produce(con);

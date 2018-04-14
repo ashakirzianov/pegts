@@ -68,8 +68,7 @@ export namespace Implementation {
     const addPrescOperator = trivia.followedBy(either(add).or(sub)).produce(explan.Symbol);
     const multPrescOperator = trivia.followedBy(either(mult).or(div)).produce(explan.Symbol);
 
-    const recExp = recursive<explan.Expression>();
-    export const expression = builder<string, explan.Expression>(recExp);
+    export const expression = recursive<string, explan.Expression>();
 
     const literalExpression = literal.produce(explan.LiteralExpression);
     const namedFuncExpression = fnKeyword
@@ -131,7 +130,7 @@ export namespace Implementation {
         .or(letExpression)
         .or(arithmeticExpression);
 
-    recExp.set(actualExpression);
+    expression.set(actualExpression);
 }
 
 export const parser = Implementation.expression;

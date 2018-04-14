@@ -5,8 +5,8 @@ import { ParserChainBuilder1, ParserChainBuilder2 } from './strongParserChainBui
 import {
     pegPairLeft, pegPairRight,
     sequence, choice, zeroMore, oneMore, optional, and, not,
-    adopt,
-    Pair, Many,
+    adopt, proxy,
+    Pair, Many, ProxyParser,
 } from "./Operators";
 
 export function startsWith<TI, TO>(parser: Parser<TI, TO>): ParserChainBuilder1<TI, TO> {
@@ -41,6 +41,22 @@ export function ifNotStarts<TI>(parser: Parser<TI, any>): PredicateParserBuilder
     return new PredicateParserBuilderImp(not(parser));
 }
 
+export function recursive<TI, TO>(): ProxyParserBuilder<TI, TO> {
+    return new ProxyParserBuilderImp(proxy());
+}
+
+export const Parse = {
+    startsWith,
+    builder,
+    either,
+    anyNumberOf,
+    atLeastOne,
+    maybe,
+    ifStarts,
+    ifNotStarts,
+    recursive,
+};
+
 export interface Constructor<T1, TR> {
     new (p1: T1) : TR;
 }
@@ -66,6 +82,10 @@ export interface ManyParserBuilder<TI, TO> extends ParserBuilder<TI, Many<TO>> {
 
 export interface PredicateParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
     then<TR>(parser: Parser<TI, TR>): ParserBuilder<TI, TR>;
+}
+
+export interface ProxyParserBuilder<TI, TO> extends ParserBuilder<TI, TO> {
+    set(parser: Parser<TI, TO>): void;
 }
 
 class ParserBuilderBase<TI, TO> implements ParserBuilder<TI, TO> {
@@ -141,5 +161,13 @@ class PredicateParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implem
 
     then<TR>(next: Parser<TI, TR>): ParserBuilder<TI, TR> {
         return this.followedBy(next).adopt((l, r) => r);
+    }
+}
+
+class ProxyParserBuilderImp<TI, TO> extends ParserBuilderBase<TI, TO> implements ProxyParserBuilder<TI, TO> {
+    constructor(parser: ProxyParser<TI, TO>) { super(parser); }
+
+    set(parser: Parser<TI, TO>): void {
+        (this.parser as ProxyParser<TI, TO>).set(parser);
     }
 }

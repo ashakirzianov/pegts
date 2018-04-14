@@ -191,3 +191,23 @@ class Adopt<TI, TO, TR> implements Parser<TI, TR> {
         return this.parser.toString();
     }
 }
+
+export function proxy<TI, TO>() {
+    return new ProxyParser<TI, TO>();
+}
+
+export class ProxyParser<TI, TO> implements Parser<TI, TO> {
+    private parser?: Parser<TI, TO> = undefined;
+
+    set(parser: Parser<TI, TO>) {
+        this.parser = parser;
+    }
+
+    parse(input: Input<TI>): Result<TI, TO> {
+        return this.parser ? this.parser.parse(input) : new Fail(0);
+    }
+
+    toString() {
+        return this.parser ? this.parser.toString() : "<null>";
+    }
+}
