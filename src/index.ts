@@ -1,6 +1,4 @@
-export * from './FluentBuilder';
-export * from './core';
-export { ParserBuilder } from './parserBuilder';
+export * from './fluentBuilder';
 
-import * as predefined from './Predefined';
+import * as predefined from './predefined';
 export { predefined };

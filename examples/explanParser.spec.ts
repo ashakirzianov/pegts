@@ -1,11 +1,11 @@
-import { readFileSync } from "fs";
-import { expect } from "chai";
+import { readFileSync } from 'fs';
+import { expect } from 'chai';
 
-import explanParser from "./ExplanParser";
-import { Implementation } from "./ExplanParser";
-import { evaluate } from "./Explan";
-import * as explan from "./Explan";
-import parse from "../src/TestHelpers";
+import explanParser from './explanParser';
+import { Implementation } from './explanParser';
+import { evaluate } from './explan';
+import * as explan from './explan';
+import parse from '../src/testHelpers';
 
 function ThrowError(message: string | undefined = undefined): never {
     throw new Error(message);

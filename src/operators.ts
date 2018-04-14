@@ -1,4 +1,4 @@
-import { Parser, Input, Result, Success, Fail } from "./Core";
+import { Parser, Input, Result, Success, Fail } from './core';
 
 export type Pair<TOL, TOR> = { pegLeft: TOL, pegRight: TOR };
 function pair<TOL, TOR>(left: TOL, right: TOR): Pair<TOL, TOR> {

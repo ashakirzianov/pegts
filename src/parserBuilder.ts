@@ -1,6 +1,6 @@
-import { Parser, Input, Success, Fail } from "./Core";
-import { WeakParserChainBuilder } from "./WeakParserChainBuilder";
-import { ParserChainBuilder1, ParserChainBuilder2 } from "./StrongParserChainBuilder";
+import { Parser, Input, Success, Fail } from './core';
+import { WeakParserChainBuilder } from './weakParserChainBuilder';
+import { ParserChainBuilder1, ParserChainBuilder2 } from './strongParserChainBuilder';
 
 import {
     pegPairLeft, pegPairRight,

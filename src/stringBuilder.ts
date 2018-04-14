@@ -1,6 +1,6 @@
-import { Parser, Input, Success, Fail } from "./Core";
-import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from "./Operators";
-import { ParserBuilder, Constructor, builder, either as eitherGeneric } from "./ParserBuilder";
+import { Parser, Input, Success, Fail } from './core';
+import { sequence, choice, zeroMore, oneMore, optional, not, and, adopt, pegPairLeft, pegPairRight } from './operators';
+import { ParserBuilder, Constructor, builder, either as eitherGeneric } from './parserBuilder';
 
 export type StringComparisonOptions = undefined | {
     readonly caseInsensitive?: boolean;

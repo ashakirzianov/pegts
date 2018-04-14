@@ -1,5 +1,5 @@
-import { Expression } from "./Expression";
-import { DynamicEnvironment } from "./Core";
+import { Expression } from './expression';
+import { DynamicEnvironment } from './core';
 
 export type Value = NumValue | BoolValue | StringValue | FuncValue | RecordValue | ErrorValue;
 export type ValueKind = "num" | "bool" | "string" | "func" | "rec";

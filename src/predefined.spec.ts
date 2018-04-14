@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import * as pre from "./Predefined";
-import parse from "./TestHelpers";
+import { expect } from 'chai';
+import * as pre from './predefined';
+import parse from './testHelpers';
 
 describe("Predefined", () => {
     it("whitespace", () => {

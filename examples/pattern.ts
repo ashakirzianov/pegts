@@ -1,8 +1,8 @@
 import {
     Children, SyntaxTree, Trivia, Symbol, Identifier,
     Bindings,
-} from "./Core";
-import { Value } from "./Value";
+} from './core';
+import { Value } from './value';
 
 export abstract class Pattern extends SyntaxTree {
     // constructor() { super(arguments); }

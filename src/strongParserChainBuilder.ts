@@ -1,5 +1,5 @@
-import { Parser } from "./Core";
-import { ParserBuilder } from "./ParserBuilder";
+import { Parser } from './core';
+import { ParserBuilder } from './parserBuilder';
 
 export interface Constructor1<T1, TR> {
     new (p1: T1) : TR;

@@ -1,20 +1,20 @@
-import { Parser, Input, Fail, Result } from "./Core";
-import { ParserBuilder, builder } from "./ParserBuilder";
+import { Parser, Input, Fail, Result } from './core';
+import { ParserBuilder, builder } from './parserBuilder';
 
-export { Parser } from "./Core";
+export * from './core';
 
 export {
     startsWith, builder,
     atLeastOne, anyNumberOf, maybe, ifStarts, ifNotStarts,
     ParserBuilder,
-} from "./ParserBuilder";
+} from './parserBuilder';
 
 export {
     charset, either,
     str, stringInput, notStr, anyChar, reg,
     plus, star, question,
     StringParserBuilder,
-} from "./StringBuilder";
+} from './stringBuilder';
 
 export function recursive<TO>() {
     return new RecursiveParser<string, TO>();

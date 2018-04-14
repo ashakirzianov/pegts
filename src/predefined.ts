@@ -2,7 +2,7 @@ import {
     ifStarts, ifNotStarts,
     str, notStr, anyChar, charset,
     Parser, ParserBuilder, StringParserBuilder,
-} from "./FluentBuilder";
+} from './fluentBuilder';
 
 export const lineEnd = str("\n").or("\r");
 export const space = str(" ");
