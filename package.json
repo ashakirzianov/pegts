@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "full": "npm run build && npm run lint && npm run test",
-    "lint": "tslint ./src/**/*.ts ./examples/**/*.ts",
-    "test": "mocha ./src/**/*.spec.ts --compilers ts:ts-node/register ",
+    "lint": "tslint ./src/**/*.ts",
+    "test": "mocha ./**/*.spec.ts --compilers ts:ts-node/register ",
     "build": "tsc"
   },
   "repository": {
