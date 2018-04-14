@@ -21,6 +21,7 @@
         "combinatory",
         "cond",
         "explan",
+        "explanparser",
         "exps",
         "letfun",
         "lockfile",

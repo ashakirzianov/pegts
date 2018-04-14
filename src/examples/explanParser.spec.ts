@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 
-import explanParser from './explanParser';
-import { Implementation } from './explanParser';
+import explanParser from './explanparser';
+import { Implementation } from './explanparser';
 import { evaluate } from './explan';
 import * as explan from './explan';
 import parse from '../testHelpers';
