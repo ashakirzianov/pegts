@@ -15,7 +15,7 @@ TypeScript:
 ## Usage:
 
 ```typescript
-import { Parse, Str } from '../src/index';
+import { Parse, Str } from 'pegts';
 
 type Expression = LiteralExpression | OperatorExpression;
 type LiteralExpression = { literal: number };
