@@ -1,7 +1,16 @@
-language : node_js
-node_js :
- - stable
+language: node_js
+node_js:
+- stable
 install:
- - npm install
+- npm install
 script:
- - npm test
+- npm test
+deploy:
+  provider: npm
+  email: ashakirzianov@icloud.com
+  api_key:
+    secure: RFJ4yslLIyqcSQNrXO3vLBhvTI5wr4snhhcvb5dvOCaXc4FK77TXH1eF+wYNwzguWQ67+ORRd+1eKws1cwzYarEB4mwO0+JvNpxzjQ6DgcJQ68zJX65hJIA+AxGxL0i3FFzqkjdj3gol/FdnAQnIQChcSATvVdcqTolIdAHoAOvLYSgnRnuxs0aFgTjSZIDQzEZKM5Y1gZciZlk949uicOl0mZj4t0vA8sKxasCgXPAcuIrjgEOZgKGPmakepWnSOaK1GDWZxQ8Jc7NvIT/1IltDTUQ88tKSCbPCb6NTSiWlmv6QcNQ1gp1vPTZ0k2wBbibCAHqJntV1QY9jE/ZcLd2yJ9fOAki7wDVBb2VWO0PV19ZNPot3dUvGRQMWyHJ2xDqY/eueDmMvIij6n+/yGd3p7m8sUEy8JdiUHJWfGjO36Q2FWTgd1WEAY/M+939Ohy0UiYP/4CuF5/UciE3kWtdipq4CaV58902aPJrGkqnIiELQth7CpCjPZohX4G9LOcbexVPtlIGs4WblV6ZnRyXPqYiPzSqk0ZnZW32rbf1edOKiCzTc4K743RM5L7b2Ef/3k6DUWLhms/AUcJa4M/FF1frzMnKeOKlB+Pmpn4dlmA7JYPA6FrYN9x5vn1g6YCloyMg6Vtc8pfvWtFgst+yGSZ/bJu1WQsG151oZD1Y=
+  on:
+    tags: true
+    repo: ashakirzianov/pegts
+    branch: master
