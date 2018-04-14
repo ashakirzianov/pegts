@@ -1,5 +1,4 @@
 import * as explan from './explan';
-import { Parser } from '../src/index';
 import {
     atLeastOne, anyNumberOf,
     startsWith, either, builder,
@@ -7,8 +6,8 @@ import {
     recursive,
     ifStarts, ifNotStarts,
     predefined as pre,
-    ParserBuilder, Fail, Success,
-} from '../src/index';
+    Parser, ParserBuilder, Fail, Success,
+} from '../index';
 
 export namespace Implementation {
     const add = str("+");

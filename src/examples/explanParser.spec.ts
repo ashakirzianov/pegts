@@ -5,7 +5,7 @@ import explanParser from './explanParser';
 import { Implementation } from './explanParser';
 import { evaluate } from './explan';
 import * as explan from './explan';
-import parse from '../src/testHelpers';
+import parse from '../testHelpers';
 
 function ThrowError(message: string | undefined = undefined): never {
     throw new Error(message);
@@ -134,7 +134,7 @@ describe("Integration", () => {
     describe("Sample program", () => {
 
         function read() {
-            const sourceCode = readFileSync("./examples/sample.x", "utf-8");
+            const sourceCode = readFileSync("./src/examples/sample.x", "utf-8");
             const parsingResult = explanParser(sourceCode);
             expect(parsingResult.success, "Can't parse sample").to.be.true;
             const syntaxTree = parsingResult.success ? parsingResult.value : ThrowError();

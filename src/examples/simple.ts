@@ -1,4 +1,4 @@
-import { Parse, Str } from '../src/index';
+import { Parse, Str } from '../index';
 
 type Expression = LiteralExpression | OperatorExpression;
 type LiteralExpression = { literal: number };
