@@ -1,8 +1,5 @@
-import {
-    ifStarts, ifNotStarts,
-    str, notStr, anyChar, charset,
-    Parser, ParserBuilder, StringParserBuilder,
-} from './fluentBuilder';
+import { str, charset, StringParserBuilder } from "./stringBuilder";
+import { ParserBuilder } from "./parserBuilder";
 
 export const lineEnd = str("\n").or("\r");
 export const space = str(" ");
