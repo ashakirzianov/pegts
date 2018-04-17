@@ -1,7 +1,5 @@
 .vscode
 /src/
-/dist/examples/*
-/dist/*.spec.*
 
 tslint.json
 todo.txt
