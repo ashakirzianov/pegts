@@ -28,7 +28,7 @@
     "chai-subset": "^1.3.0",
     "mocha": "^5.0.0",
     "ts-node": "^5.0.1",
-    "tslint": "4.0.2",
+    "tslint": "4.5.1",
     "typescript": "^2.8.1"
   },
   "author": "Anton Shakirzianov",
